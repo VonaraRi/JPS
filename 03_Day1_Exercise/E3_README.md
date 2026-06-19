@@ -1,3 +1,5 @@
+## Check on file src\main\java\com\fullstack for CourseOffering.java code
+
 ## Why is CourseOffering more useful than using only Course when building a real web application?
 
 CourseOffering is significantly more useful than using only Course in a real web application because they serve different but complementary purposes:
