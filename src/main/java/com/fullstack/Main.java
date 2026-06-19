@@ -2,6 +2,10 @@ package src.main.java.com.fullstack;
 
 public class Main {
     public static void main (String[] args){
+        //Syntax for creating a new object (instance) of the Course class
+        //ClassName objectName = new Construtor();
+        //ClassName and Constructor usually match
+        
         // Create Instructors
         Instructor instructor1 = new Instructor("I001", "Dr. Alice Smith", "Computer Science");
         Instructor instructor2 = new Instructor("I002", "Prof. Bob Johnson", "Data Science");
@@ -27,13 +31,20 @@ public class Main {
         course3.printSummary();
 
         // Display Instructor Profiles
-        System.out.println();
         System.out.println("===== Instructor Profiles =====");
-        System.out.println();
         instructor1.printProfile();
-        System.out.println();
         instructor2.printProfile();
-        System.out.println();
         instructor3.printProfile();
+
+        // Create Students
+        Student student1 = new Student("S001", "John Davis", "john.davis@email.com");
+        Student student2 = new Student("S002", "Sarah Wilson", "sarah.wilson@email.com");
+        Student student3 = new Student("S003", "Michael Brown", "michael.brown@email.com");
+
+        // Display Student Profiles
+        System.out.println("===== Student Profiles =====");
+        student1.printProfile();
+        student2.printProfile();
+        student3.printProfile();
     }
 }
