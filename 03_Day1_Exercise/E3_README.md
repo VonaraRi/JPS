@@ -1,4 +1,4 @@
-## Check on file src\main\java\com\fullstack for CourseOffering.java code
+### Check on file src\main\java\com\fullstack for CourseOffering.java code
 
 ## Why is CourseOffering more useful than using only Course when building a real web application?
 
