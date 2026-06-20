@@ -18,6 +18,10 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
+    public Optional<Course> getCourseById(String courseId) {
+        return courseRepository.findById(courseId);
+    }
+
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
@@ -46,5 +50,21 @@ public class CourseService {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    public List<Course> searchByTitle(String keyword) {
+        String safeKeyword = (keyword == null) ? "" : keyword.trim().toLowerCase();
+
+        return courseRepository.findAll().stream()
+            .filter(course -> course.getTitle() != null && course.getTitle().toLowerCase().contains(safeKeyword))
+            .toList();
+    }
+
+    public List<Course> filterByLevel(String level) {
+        String safeLevel = (level == null) ? "" : level.trim().toLowerCase();
+
+        return courseRepository.findAll().stream()
+            .filter(course -> course.getLevel() != null && course.getLevel().toLowerCase().contains(safeLevel))
+            .toList();
     }
 }
