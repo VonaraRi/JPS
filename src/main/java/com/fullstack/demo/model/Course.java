@@ -51,6 +51,10 @@ public class Course {
         return active;
     }
 
+    public String getSummary() {
+        + ", Instructor: " + instructorName;
+    }
+
     public void printSummary() {
         System.out.println("Course ID: "+ courseId);
         System.out.println("Title: "+ title);
@@ -64,5 +68,10 @@ public class Course {
         } else {
             System.out.println("Instructor: " + instructor.getInstructorName());
         }
+    }
+
+    @Override
+    public String toString() {
+        return getSummary();
     }
 }
