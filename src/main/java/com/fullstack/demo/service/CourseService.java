@@ -3,6 +3,7 @@ package src.main.java.com.fullstack.demo.service;
 import src.main.java.com.fullstack.demo.repository.CourseRepository;
 import src.main.java.com.fullstack.demo.model.Course;
 import src.main.java.com.fullstack.demo.model.Instructor;
+import src.main.java.com.fullstack.demo.exception.CourseNotFoundException;
 import src.main.java.com.fullstack.demo.exception.InvalidCourseException;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,31 @@ public class CourseService {
             .filter(course -> course.getInstructor().getInstructorName() != null &&
                                 course.getInstructor().getInstructorName().toLowerCase().contains(safeName))
             .toList();
+    }
+
+    public Course updateDuration(String courseId, int newDurationHours) {
+        //check if greater than zero
+        if (newDurationHours <= 0) {
+            throw new InvalidCourseException("Course duration must be greater than zero");
+        }
+
+        return getCourseById(courseId)
+            .map(course -> {
+                course.setDurationHours(newDurationHours);
+                return courseRepository.save(course);
+            })
+            .orElseThrow(() -> new CourseNotFoundException("Course with ID " + courseId + "not found."));
+    }
+
+    public void deleteCourse(String courseId) {
+        //check whether the course exists using the repository
+        boolean exists = courseRepository.existsById(courseId);
+
+        if(!exists) {
+            throw new CourseNotFoundException("Course with ID " + courseId + "cannot be deleted because it does not exist.");
+        }
+
+        courseRepository.deleteById(courseId);
     }
 
     private boolean isBlank(String value) {
