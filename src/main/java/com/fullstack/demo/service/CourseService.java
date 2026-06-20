@@ -2,6 +2,7 @@ package src.main.java.com.fullstack.demo.service;
 
 import src.main.java.com.fullstack.demo.repository.CourseRepository;
 import src.main.java.com.fullstack.demo.model.Course;
+import src.main.java.com.fullstack.demo.model.Instructor;
 import src.main.java.com.fullstack.demo.exception.InvalidCourseException;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,45 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    public List<Course> searchByTitle(String keyword) {
+        String safeKeyword = (keyword == null) ? "" : keyword.trim().toLowerCase();
+
+        return courseRepository.findAll().stream()
+            .filter(course -> course.getTitle() != null && course.getTitle().toLowerCase().contains(safeKeyword))
+            .toList();
+    }
+
+    public List<Course> filterByLevel(String level) {
+        String safeLevel = (level == null) ? "" : level.trim().toLowerCase();
+
+        return courseRepository.findAll().stream()
+            .filter(course -> course.getLevel() != null && course.getLevel().toLowerCase().contains(safeLevel))
+            .toList();
+    }
+
+    public Course assignInstructor(String courseId, Instructor instructor) {
+        return getCourseById(courseId)
+            .map(course -> {
+                course.setInstructor(instructor);
+                return courseRepository.save(course);
+            })
+            .orElseThrow(() -> new InvalidCourseException("Course with ID" + courseId + "not found"));
+    }
+
+    public List<Course> searchByInstructorName(String instructorName) {
+        String safeName = (instructorName == null) ? "" : instructorName.trim().toLowerCase();
+
+        return courseRepository.findAll().stream()
+            .filter(course -> course.getInstructor() != null) //ignore courses with no instructor
+            .filter(course -> course.getInstructor().getInstructorName() != null &&
+                                course.getInstructor().getInstructorName().toLowerCase().contains(safeName))
+            .toList();
+    }
+
     private void validateCourse(Course course){
         if (course == null) {
             throw new InvalidCourseException("Course cannot be null.");
@@ -48,23 +88,4 @@ public class CourseService {
         }
     }
 
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
-    }
-
-    public List<Course> searchByTitle(String keyword) {
-        String safeKeyword = (keyword == null) ? "" : keyword.trim().toLowerCase();
-
-        return courseRepository.findAll().stream()
-            .filter(course -> course.getTitle() != null && course.getTitle().toLowerCase().contains(safeKeyword))
-            .toList();
-    }
-
-    public List<Course> filterByLevel(String level) {
-        String safeLevel = (level == null) ? "" : level.trim().toLowerCase();
-
-        return courseRepository.findAll().stream()
-            .filter(course -> course.getLevel() != null && course.getLevel().toLowerCase().contains(safeLevel))
-            .toList();
-    }
 }
