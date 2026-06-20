@@ -27,10 +27,6 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
-    }
-
     public List<Course> searchByTitle(String keyword) {
         String safeKeyword = (keyword == null) ? "" : keyword.trim().toLowerCase();
 
@@ -64,6 +60,10 @@ public class CourseService {
             .filter(course -> course.getInstructor().getInstructorName() != null &&
                                 course.getInstructor().getInstructorName().toLowerCase().contains(safeName))
             .toList();
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 
     private void validateCourse(Course course){
