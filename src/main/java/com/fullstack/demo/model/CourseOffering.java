@@ -8,9 +8,8 @@ public class CourseOffering {
     private String startDate;
     private String endDate;
     private int capacity;
-    private String deliveryMode;
+    private String deliveryMode; // e.g. "Online", "In-Person"
 
-    // Constructor
     public CourseOffering(String offeringId, String offeringName, Course course, 
                           Instructor instructor, String startDate, String endDate, int capacity, String deliveryMode) {
         this.offeringId = offeringId;
@@ -23,7 +22,13 @@ public class CourseOffering {
         this.deliveryMode = deliveryMode;
     }
 
-    // Getter Methods
+    private static String requireText(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " is required.");
+        }
+        return value.trim();
+    }
+
     public String getOfferingId() {
         return offeringId;
     }
@@ -56,14 +61,27 @@ public class CourseOffering {
         return deliveryMode;
     }
 
-    public void printOfferingSummary() {
-        System.out.println("Offering ID: " + offeringId 
-        + ", Offering Name: " + offeringName 
-        + "\nCourse: " + course.getTitle() 
-        + "\nInstructor: " + instructor.getInstructorName() 
-        + "\nStart Date: " + startDate 
-        + "\nEnd Date: " + endDate 
-        + "\nCapacity: " + capacity 
-        + "\nDelivery Mode: " + deliveryMode);
+    public void printSummary() {
+        System.out.println("Offering ID: " + offeringId);
+        System.out.println("Offering Name: " + offeringName);
+        System.out.println("Course: " + course.getTitle());
+        System.out.println("Instructor: " + instructor.getInstructorName());
+        System.out.println("Start Date: " + startDate);
+        System.out.println("End Date: " + endDate);
+        System.out.println("Capacity: " + capacity);
+        System.out.println("Delivery Mode: " + deliveryMode);
+    }
+
+    public String getSummary() {
+        return "CourseOffering {" +
+                "offeringId='" + offeringId + '\'' +
+                ", offeringName='" + offeringName + '\'' +
+                ", course='" + course.getTitle() + '\'' +
+                ", instructor='" + instructor.getInstructorName() + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", endDate='" + endDate + '\'' +
+                ", capacity=" + capacity +
+                ", deliveryMode='" + deliveryMode + '\'' +
+                '}';
     }
 }

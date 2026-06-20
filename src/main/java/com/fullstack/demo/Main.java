@@ -1,5 +1,12 @@
 package src.main.java.com.fullstack.demo;
 
+import src.main.java.com.fullstack.demo.model.Course;
+import src.main.java.com.fullstack.demo.model.CourseOffering;
+import src.main.java.com.fullstack.demo.model.Instructor;
+import src.main.java.com.fullstack.demo.model.Student;
+import java.util.List;
+import java.util.ArrayList;
+
 public class Main {
     public static void main (String[] args){
         //Syntax for creating a new object (instance) of the Course class
@@ -50,10 +57,12 @@ public class Main {
             "Hybrid"
         );
 
-        // Assign Instructors to Courses
-        course1.setInstructor(instructor1);
-        course2.setInstructor(instructor2);
-        course3.setInstructor(instructor3);
+        // Create Students
+        Student student1 = new Student("S001", "John Davis", "john.davis@email.com");
+        Student student2 = new Student("S002", "Sarah Wilson", "sarah.wilson@email.com");
+        Student student3 = new Student("S003", "Michael Brown", "michael.brown@email.com");
+
+        // Instructors already assigned in Course constructors
 
         // Display Course Summaries
         System.out.println("===== Course Information =====");
@@ -68,27 +77,22 @@ public class Main {
         System.out.println();
         System.out.println("===== Course Offering Information =====");
         System.out.println();
-        courseOffering1.printOfferingSummary();
+        courseOffering1.printSummary();
         System.out.println();
-        courseOffering2.printOfferingSummary();
+        courseOffering2.printSummary();
         System.out.println();
-        courseOffering3.printOfferingSummary();
+        courseOffering3.printSummary();
 
         // Display Instructor Profiles
         System.out.println();
         System.out.println("===== Instructor Profiles =====");
         System.out.println();
-        instructor1.printProfile();
+        instructor1.getProfile();
         System.out.println();
-        instructor2.printProfile();
+        instructor2.getProfile();
         System.out.println();
-        instructor3.printProfile();
+        instructor3.getProfile();
         System.out.println();
-
-        // Create Students
-        Student student1 = new Student("S001", "John Davis", "john.davis@email.com");
-        Student student2 = new Student("S002", "Sarah Wilson", "sarah.wilson@email.com");
-        Student student3 = new Student("S003", "Michael Brown", "michael.brown@email.com");
 
         // Display Student Profiles
         System.out.println();
@@ -99,5 +103,30 @@ public class Main {
         student2.printProfile();
         System.out.println();
         student3.printProfile();
+
+        // Store objects in ArrayLists (repositories)
+        List<Course> courses = new ArrayList<>();
+        courses.add(course1);
+        courses.add(course2);
+        courses.add(course3);
+
+        System.out.println();
+        System.out.println("===== Stored Course Summaries =====");
+        for (Course course : courses) {
+            course.printSummary();
+            System.out.println();
+        }
+
+        List<Instructor> instructors = new ArrayList<Instructor>();
+        instructors.add(instructor1);
+        instructors.add(instructor2);
+        instructors.add(instructor3);
+
+        System.out.println();
+        System.out.println("===== Stored Instructor Profiles =====");
+        for (Instructor instructor : instructors) {
+            instructor.getProfile();
+            System.out.println();
+        }
     }
 }

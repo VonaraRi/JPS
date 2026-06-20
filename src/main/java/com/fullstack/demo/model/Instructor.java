@@ -6,17 +6,25 @@ public class Instructor {
     private String expertise;
 
     public Instructor(String instructorId, String instructorName, String expertise) {
-        this.instructorId = instructorId;
-        this.instructorName = instructorName;
-        this.expertise = expertise;
+        setInstructorId(instructorId);
+        setInstructorName(instructorName);
+        setExpertise(expertise);
     }
 
     public String getInstructorId() {
         return instructorId;
     }
 
+    public void setInstructorId(String instructorId) {
+        this.instructorId = requireText(instructorId, "Instructor ID");
+    }
+
     public String getInstructorName() {
         return instructorName;
+    }
+
+    public void setInstructorName(String instructorName) {
+        this.instructorName = requireText(instructorName, "Instructor Name");
     }
 
     public String getExpertise() {
@@ -24,12 +32,19 @@ public class Instructor {
     }
 
     public void setExpertise(String expertise) {
-        this.expertise = expertise;
+        this.expertise = requireText(expertise, "Expertise");
     }
 
-    public void printProfile() {
+    public void getProfile() {
         System.out.println("Instructor ID: " + instructorId);
         System.out.println("Name: " + instructorName);
         System.out.println("Expertise: " + expertise);
+    }
+    
+    private static String requireText(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " is required.");
+        }
+        return value.trim();
     }
 }

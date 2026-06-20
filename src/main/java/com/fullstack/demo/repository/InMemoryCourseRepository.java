@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
-
 import src.main.java.com.fullstack.demo.model.Course;
 
 public class InMemoryCourseRepository implements CourseRepository {

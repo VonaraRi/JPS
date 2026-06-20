@@ -2,7 +2,6 @@ package src.main.java.com.fullstack.demo.repository;
 
 import java.util.List;
 import java.util.Optional;
-
 import src.main.java.com.fullstack.demo.model.Course;
 
 public interface CourseRepository {
