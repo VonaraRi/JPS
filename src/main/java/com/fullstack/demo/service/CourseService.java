@@ -50,7 +50,7 @@ public class CourseService {
                 course.setInstructor(instructor);
                 return courseRepository.save(course);
             })
-            .orElseThrow(() -> new InvalidCourseException("Course with ID" + courseId + "not found"));
+            .orElseThrow(() -> new InvalidCourseException("Course with ID " + courseId + " not found"));
     }
 
     public List<Course> searchByInstructorName(String instructorName) {
@@ -74,15 +74,13 @@ public class CourseService {
                 course.setDurationHours(newDurationHours);
                 return courseRepository.save(course);
             })
-            .orElseThrow(() -> new CourseNotFoundException("Course with ID " + courseId + "not found."));
+            .orElseThrow(() -> new CourseNotFoundException("Course with ID " + courseId + " not found."));
     }
 
     public void deleteCourse(String courseId) {
         //check whether the course exists using the repository
-        boolean exists = courseRepository.existsById(courseId);
-
-        if(!exists) {
-            throw new CourseNotFoundException("Course with ID " + courseId + "cannot be deleted because it does not exist.");
+            if (!courseRepository.existsById(courseId)){
+                throw new CourseNotFoundException("Course with ID " + courseId + " cannot be deleted because it does not exist.");
         }
 
         courseRepository.deleteById(courseId);
