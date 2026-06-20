@@ -1,4 +1,4 @@
-package src.main.java.com.fullstack;
+package src.main.java.com.fullstack.demo.model;
 
 public class Instructor {
     private String instructorId;
