@@ -4,7 +4,6 @@ import src.main.java.com.fullstack.demo.model.Course;
 import src.main.java.com.fullstack.demo.model.CourseOffering;
 import src.main.java.com.fullstack.demo.model.Instructor;
 import src.main.java.com.fullstack.demo.model.Student;
-import java.util.List;
 import java.util.ArrayList;
 
 public class Main {
@@ -82,7 +81,7 @@ public class Main {
             System.out.println();
         }
 
-        System.out.println("===== Instructor Profiles =====");
+        System.out.println("===== Student Profiles =====");
         for (Student student : students) {
             student.printProfile();
             System.out.println();
