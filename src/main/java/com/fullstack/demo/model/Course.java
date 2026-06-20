@@ -9,7 +9,7 @@ public class Course {
     private String category;
     private boolean active;
 
-    public Course(String courseId, String title, int durationHours, String level, String category, boolean active){
+    public Course(String courseId, String title, int durationHours, String level, Instructor instructor, String category, boolean active) {
         this.courseId = courseId;
         this.title = title;
         this.durationHours = durationHours;
