@@ -23,3 +23,17 @@ public Optional<Course> getCourseById(String courseId) {
 3. Third: InMemoryCourseRepository.java (The Data Access Layer)
 
 Finally, the request lands in your repository implementation. This is the file that directly interacts with the data storage (your in-memory collection or database) to grab the actual Course object and pass it all the way back up to your main class.
+
+
+
+## Why is throwing CourseNotFoundException better than printing inside CourseService? 
+
+Throwing a CourseNotFoundException is better because the service layer shouldn't decide how to display errors.
+
+By throwing an exception instead of printing, you allow different frontends to handle the same error in their own way:
+
+-    Console App: Catches it and prints a clean message to the terminal.
+
+-    Web API: Catches it and converts it into a 404 Not Found HTTP network status code.
+
+-    Frontend App (React/Mobile): Sees that 404 status and turns it into a beautiful popup or toast alert for the user.
