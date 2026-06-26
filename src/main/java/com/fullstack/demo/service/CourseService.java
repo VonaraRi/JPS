@@ -42,7 +42,15 @@ public class CourseService {
             }
         }
         return results;
+    }
     
+    // Optional Task D - Stream Version
+    public List<Course> searchByLevelUsingStream(String level) {
+        String safeLevel = level == null ? "" : level.trim();
+
+        return courseRepository.findAll().stream()
+            .filter(course -> course.getLevel() != null && course.getLevel().equalsIgnoreCase(safeLevel))
+            .toList();
     }
 
     public List<Course> searchByTitle(String keyword) {
