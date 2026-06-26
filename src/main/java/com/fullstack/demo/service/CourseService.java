@@ -43,7 +43,7 @@ public class CourseService {
         }
         return results;
     }
-    
+
     // Optional Task D - Stream Version
     public List<Course> searchByLevelUsingStream(String level) {
         String safeLevel = level == null ? "" : level.trim();
@@ -52,6 +52,12 @@ public class CourseService {
             .filter(course -> course.getLevel() != null && course.getLevel().equalsIgnoreCase(safeLevel))
             .toList();
     }
+    /*
+    stream() : Converts your List<Course> from the repository into a pipeline flow of objects
+    filter(...): Replaces your entire if condition block. It only lets courses pass through the pipeline if their level safely matches your safeLevel
+    toList(): Gathers all the filtered courses back up and packages them cleanly into a brand new List<Course> results return payload
+    */
+
 
     public List<Course> searchByTitle(String keyword) {
         String safeKeyword = (keyword == null) ? "" : keyword.trim().toLowerCase();
