@@ -67,3 +67,11 @@ filter() acts as a gatekeeper in the pipeline. It takes a condition (predicate) 
 -    If the item matches the condition (true), it passes through to the next stage.
 
 -    If it fails (false), it is discarded immediately.
+
+## How is StudentService similar to CourseService?
+
+Both `StudentService` and `CourseService` act as a business logic layer for their respective entities (Student and Course). They both use a repository for data storage and retrieval, and they both contain methods for creating, reading, and searching for data.
+
+## Which file stores students temporarily while the program is running?
+
+Based on the project's structure, an in-memory repository file for students, likely named `InMemoryStudentRepository.java`, would be responsible for temporarily storing student data in a list or map while the application is running.
