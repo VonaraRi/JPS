@@ -51,3 +51,19 @@ Separating them avoids critical design flaws:
 -    Logistics Tracking: It separates what you are learning (curriculum) from how/when you are learning it (dates, room number, and enrollment capacity).
 
 The Blueprint Analogy: Course is the blueprint for a house. CourseOffering is the actual house built on a specific plot of land at a specific time.
+
+## Which version is easier to understand: loop or stream? Why? 
+
+Loop version is often easier for beginners because it is explicit and shows exactly how the computer processes the data step-by-step (procedural).
+
+Stream version is easier for experienced developers because it is shorter and states what you want to achieve without boilerplate code (declarative).
+
+For me, loop version.
+
+## What does filter() do in a stream?
+
+filter() acts as a gatekeeper in the pipeline. It takes a condition (predicate) and evaluates each item:
+
+-    If the item matches the condition (true), it passes through to the next stage.
+
+-    If it fails (false), it is discarded immediately.
