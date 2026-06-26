@@ -1,4 +1,4 @@
-package src.main.java.com.fullstack.demo.service;
+package src.main.java.com.fullstack.demo;
 
 import src.main.java.com.fullstack.demo.repository.InMemoryCourseRepository;
 import src.main.java.com.fullstack.demo.model.Course;
