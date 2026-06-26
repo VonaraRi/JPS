@@ -14,7 +14,7 @@ public class Main {
 
         // Instructors already assigned in Course constructors
 
-        // Store objects in ArrayLists 
+        // Store objects in ArrayLists
         ArrayList<Course> courses = new ArrayList<>();
         ArrayList<Instructor> instructors = new ArrayList<> ();
         ArrayList<Student> students = new ArrayList<>();
@@ -38,8 +38,8 @@ public class Main {
         offerings.add(new CourseOffering(
             "OFF001",
             "Java Fundamental - June 2026 Intake",
-            courses.get(1),      
-            instructors.get(1),  
+            courses.get(1),
+            instructors.get(1),
             "2026-06-20",
             "2026-06-29",
             25,

@@ -81,10 +81,10 @@ public class Course {
 
     public String getSummary() {
         String instructorName = instructor == null ? "Not assigned yet" : instructor.getInstructorName();
-        return "Course ID: " + courseId 
-        + ", Title: " + title 
-        + ", Duration: " + durationHours 
-        + " hours, " 
+        return "Course ID: " + courseId
+        + ", Title: " + title
+        + ", Duration: " + durationHours
+        + " hours, "
         + ", Level: " + level
         + ", Instructor: " + instructorName;
     }
