@@ -37,3 +37,17 @@ By throwing an exception instead of printing, you allow different frontends to h
 -    Web API: Catches it and converts it into a 404 Not Found HTTP network status code.
 
 -    Frontend App (React/Mobile): Sees that 404 status and turns it into a beautiful popup or toast alert for the user.
+
+## Why is CourseOffering a better design than putting start date, end date, and capacity directly inside Course?
+
+Putting schedules inside Course breaks your system because a course is a template, while an offering is a real event.
+
+Separating them avoids critical design flaws:
+
+-    One Course, Many Intakes: You can offer "Java Fundamentals" in June, July, and September without creating three identical course objects.
+
+-   No Data Duplication: If the course name changes, you update it once in the Course class, and all offerings instantly reflect the update.
+
+-    Logistics Tracking: It separates what you are learning (curriculum) from how/when you are learning it (dates, room number, and enrollment capacity).
+
+The Blueprint Analogy: Course is the blueprint for a house. CourseOffering is the actual house built on a specific plot of land at a specific time.
