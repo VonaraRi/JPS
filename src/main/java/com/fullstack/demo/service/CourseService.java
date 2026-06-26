@@ -7,6 +7,7 @@ import src.main.java.com.fullstack.demo.exception.CourseNotFoundException;
 import src.main.java.com.fullstack.demo.exception.InvalidCourseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 public class CourseService {
     private final CourseRepository courseRepository;
@@ -26,6 +27,22 @@ public class CourseService {
 
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
+    }
+
+    //Task B
+    public List<Course> searchByLevelUsingLoop(String level){
+        String safeLevel = level == null ? "" : level.trim();
+
+        List<Course> results = new ArrayList<>();
+        
+        for (Course course : courseRepository.findAll()){
+            // check if course level matches safeLevel
+            if (course.getLevel() != null && course.getLevel().equalsIgnoreCase(safeLevel)) {
+                results.add(course);
+            }
+        }
+        return results;
+    
     }
 
     public List<Course> searchByTitle(String keyword) {
