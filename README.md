@@ -41,3 +41,15 @@ It returns the **element that was removed** from the end of the array.
 They are opposites for the *beginning* of an array:
 *   **`shift()`**: **Removes** the first element and returns it.
 *   **`unshift()`**: **Adds** one or more elements and returns the array's new length.
+
+### What does the DOM allow JavaScript to do?
+
+The DOM (Document Object Model) is an API for HTML documents that represents the page as a tree of objects. It acts as a bridge, allowing JavaScript to interact with and manipulate the content, structure, and style of a webpage.
+
+Essentially, the DOM allows JavaScript to:
+*   **Find and change** HTML elements, their attributes, and their content.
+*   **Create and delete** HTML elements.
+*   **Modify CSS styles** to change the appearance of the page.
+*   **Listen and react to user events** like clicks, mouse movements, and keyboard input.
+
+This is what makes web pages dynamic and interactive.
