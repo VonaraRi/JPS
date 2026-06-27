@@ -53,3 +53,25 @@ Essentially, the DOM allows JavaScript to:
 *   **Listen and react to user events** like clicks, mouse movements, and keyboard input.
 
 This is what makes web pages dynamic and interactive.
+
+### Asynchronous JavaScript (Async/Await & Fetch)
+
+**1. What does `async` mean?**
+
+The `async` keyword declares that a function will operate asynchronously. It ensures the function always returns a `Promise` and allows the `await` keyword to be used inside it for handling asynchronous operations.
+
+**2. What does `await` do?**
+
+`await` can only be used inside an `async` function. It pauses the function's execution until a `Promise` is settled (resolved or rejected) and "unwraps" its resolved value, making asynchronous code look and feel more like synchronous code.
+
+**3. What does `fetch` do?**
+
+`fetch()` is a modern browser API for making network requests (e.g., to get data from a URL). It returns a `Promise` that resolves to a `Response` object, representing the server's response.
+
+**4. Why do we use `fetch` with a local JSON file before a real backend?**
+
+It allows us to simulate a real API call and build the entire frontend data-handling logic (loading states, rendering, error handling) without needing a live backend server. This isolates frontend development and makes it easier to test the UI.
+
+**5. Why should this exercise be run using Live Server?**
+
+For security reasons, browsers block `fetch` requests on local files opened with a `file:///` URL. Live Server serves the project over a local web server (`http://`), which allows `fetch` to work correctly, mimicking a real-world environment.
