@@ -1,77 +1,51 @@
-### How is a JavaScript array similar to a Java ArrayList?
+# REST API Investigation Report
 
-A JavaScript `Array` is very similar to a Java `ArrayList` because both are dynamic, ordered collections of elements.
+This document outlines the results of testing the mock training API.
 
-Key Similarities:
-*   **Dynamic Sizing:** Both can automatically grow or shrink in size as you add or remove elements, unlike a standard Java array.
-*   **Ordered Collection:** Both maintain the insertion order of elements.
-*   **Indexed Access:** Both use zero-based integer indexes to access, add, or remove elements.
-*   **Iteration:** Both provide simple methods to loop through all their elements (e.g., JavaScript's `for...of` and Java's enhanced `for` loop).
+## API Test Results
 
-### Why are arrow functions important before learning React?
+| Method | URL                                          | Status Code     | Response Type | What Happened?                                                                                                                               |
+| :----- | :------------------------------------------- | :-------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET`  | `http://localhost:8081/api/course-offerings` | `200 OK`        | List          | **Success:** The API returned the complete list of all available course offerings as a JSON array.                                           |
+| `GET`  | `http://localhost:8081/api/course-offerings/CO001` | `200 OK`        | Single object | **Success:** The API found the course offering with the ID "CO001" and returned its full details as a single JSON object.                      |
+| `GET`  | `http://localhost:8081/api/course-offerings/C999` | `404 Not Found` | Error object  | **Failure:** The API could not find a course offering with the ID "C999" and correctly returned a 404 error with a "not found" message.         |
+| `POST` | `http://localhost:8081/api/course-offerings` | `201 Created`   | Single object | **Success:** A valid JSON payload was sent. The API created a new course offering, assigned it a new ID, and returned the new object. |
+| `POST` | `http://localhost:8081/api/course-offerings` | `400 Bad Request` | Error object  | **Failure:** An invalid JSON payload (missing required fields) was sent. The API rejected it and returned a validation error message. |
 
-Arrow functions are crucial for writing modern React code for two main reasons:
+---
 
-*   **Concise Syntax:** They allow you to write shorter, more readable functions, which is very common in React for things like event handlers and rendering lists with `.map()`.
-*   **Lexical `this` Binding:** This is the most important reason. Arrow functions don't have their own `this` context; they inherit it from their parent scope. This solves a common problem in React class components where `this` would otherwise be `undefined` in event handler methods, avoiding the need to manually bind `this` and making the code cleaner and less error-prone.
+## Questions & Answers
 
-### JavaScript Array Methods Quick Reference
+**1. Which request returned a successful list response?**
 
-**1. What is the difference between `filter`, `find`, and `map`?**
+The request `GET http://localhost:8081/api/course-offerings` returned a successful list response with a `200 OK` status code.
 
-These methods do **not** change the original array; they return something new.
-*   **`map()`**: Creates a **new array** by transforming every element. The new array will always have the same length as the original.
-*   **`filter()`**: Creates a **new array** containing only the elements that pass a test. The new array can be shorter than the original.
-*   **`find()`**: Returns the **first single element** that passes a test. It does not return an array.
+**2. Which request returned a not-found response?**
 
-**2. Which four array methods change the original array?**
+The request `GET http://localhost:8081/api/course-offerings/C999` returned a `404 Not Found` response because no course exists with that specific ID.
 
-`push()`, `pop()`, `shift()`, and `unshift()` all mutate (change) the original array by adding or removing elements from the beginning or end.
+**3. Which request returned a validation error?**
 
-**3. What does `push()` return?**
+The `POST` request to `http://localhost:8081/api/course-offerings` with an invalid body (e.g., empty `courseTitle` or `capacity` of 0) returned a `400 Bad Request` validation error.
 
-It returns the **new length** of the array after adding an element.
+**4. What is the difference between a successful response and an error response?**
 
-**4. What does `pop()` return?**
+A **successful response** indicates that the server understood and fulfilled the request as expected. It typically has a status code in the 200-299 range (like `200 OK` or `201 Created`) and includes the requested data (a list or a single object) in the response body.
 
-It returns the **element that was removed** from the end of the array.
+An **error response** indicates that the server could not process the request. It has a status code in the 400-599 range (like `404 Not Found` or `400 Bad Request`) and the response body usually contains an error object with a message explaining what went wrong.
 
-**5. What is the difference between `shift()` and `unshift()`?**
+**5. Why is the status code important for frontend developers?**
 
-They are opposites for the *beginning* of an array:
-*   **`shift()`**: **Removes** the first element and returns it.
-*   **`unshift()`**: **Adds** one or more elements and returns the array's new length.
+The status code is crucial for frontend developers because it is the primary, standardized way for the server to communicate the outcome of a request. It allows the frontend application to reliably determine what happened without having to inspect the response body. Based on the status code, a developer can:
 
-### What does the DOM allow JavaScript to do?
+*   **Handle Success (2xx):** If the code is `200 OK`, the developer knows it's safe to process the response data and display it to the user.
+*   **Handle Client Errors (4xx):** If the code is `404 Not Found`, the app can show a "Not Found" page. If it's `400 Bad Request`, it can display validation error messages next to the appropriate form fields. If it's `401 Unauthorized`, it can redirect the user to a login page.
+*   **Handle Server Errors (5xx):** If the code is `500 Internal Server Error`, the app can show a generic "Something went wrong, please try again later" message instead of crashing.
 
-The DOM (Document Object Model) is an API for HTML documents that represents the page as a tree of objects. It acts as a bridge, allowing JavaScript to interact with and manipulate the content, structure, and style of a webpage.
+In short, status codes enable robust and user-friendly error handling in the application.
 
-Essentially, the DOM allows JavaScript to:
-*   **Find and change** HTML elements, their attributes, and their content.
-*   **Create and delete** HTML elements.
-*   **Modify CSS styles** to change the appearance of the page.
-*   **Listen and react to user events** like clicks, mouse movements, and keyboard input.
+---
 
-This is what makes web pages dynamic and interactive.
+## Reflection
 
-### Asynchronous JavaScript (Async/Await & Fetch)
-
-**1. What does `async` mean?**
-
-The `async` keyword declares that a function will operate asynchronously. It ensures the function always returns a `Promise` and allows the `await` keyword to be used inside it for handling asynchronous operations.
-
-**2. What does `await` do?**
-
-`await` can only be used inside an `async` function. It pauses the function's execution until a `Promise` is settled (resolved or rejected) and "unwraps" its resolved value, making asynchronous code look and feel more like synchronous code.
-
-**3. What does `fetch` do?**
-
-`fetch()` is a modern browser API for making network requests (e.g., to get data from a URL). It returns a `Promise` that resolves to a `Response` object, representing the server's response.
-
-**4. Why do we use `fetch` with a local JSON file before a real backend?**
-
-It allows us to simulate a real API call and build the entire frontend data-handling logic (loading states, rendering, error handling) without needing a live backend server. This isolates frontend development and makes it easier to test the UI.
-
-**5. Why should this exercise be run using Live Server?**
-
-For security reasons, browsers block `fetch` requests on local files opened with a `file:///` URL. Live Server serves the project over a local web server (`http://`), which allows `fetch` to work correctly, mimicking a real-world environment.
+After this exercise, I better understand how **HTTP status codes and response bodies form a clear contract** between a client and server. Deliberately testing for errors like `404 Not Found` and `400 Bad Request` showed me that error responses are just as crucial as successful ones. A well-designed API uses status codes to communicate the outcome (`OK`, `Created`, `Not Found`) and the response body to provide details, enabling robust frontend applications that can handle both success and failure gracefully.
