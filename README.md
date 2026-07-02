@@ -49,3 +49,59 @@ In short, status codes enable robust and user-friendly error handling in the app
 ## Reflection
 
 After this exercise, I better understand how **HTTP status codes and response bodies form a clear contract** between a client and server. Deliberately testing for errors like `404 Not Found` and `400 Bad Request` showed me that error responses are just as crucial as successful ones. A well-designed API uses status codes to communicate the outcome (`OK`, `Created`, `Not Found`) and the response body to provide details, enabling robust frontend applications that can handle both success and failure gracefully.
+
+---
+
+
+
+# Event Booking API Design
+
+This document outlines the REST API design for an event booking system.
+
+## API Specification
+
+| Resource | Method | Endpoint              | Purpose                           | Request Body Needed? | Success Status  | Possible Error Status     |
+| :------- | :----- | :-------------------- | :-------------------------------- | :------------------- | :-------------- | :------------------------ |
+| Event    | `GET`  | `/events`             | Get a list of all events          | No                   | `200 OK`        | `500`                     |
+| Event    | `GET`  | `/events/{eventId}`   | Get details for a specific event  | No                   | `200 OK`        | `404`, `500`              |
+| Booking  | `POST` | `/bookings`           | Create a new booking for an event | Yes                  | `201 Created`   | `400`, `404`, `409`, `500`|
+| Booking  | `GET`  | `/bookings`           | Get a list of all bookings        | No                   | `200 OK`        | `500`                     |
+| Booking  | `GET`  | `/bookings/{bookingId}` | Get details for a specific booking  | No                   | `200 OK`        | `404`, `500`              |
+| Booking  | `DELETE` | `/bookings/{bookingId}` | Cancel a specific booking         | No                   | `204 No Content`| `404`, `409`, `500`       |
+
+## Request and Response Planning
+
+| Endpoint      | Request Body Description                                                                                             |
+| :------------ | :------------------------------------------------------------------------------------------------------------------- |
+| `POST /bookings` | A JSON object containing the `eventId` of the event being booked, the `userName`, `userEmail`, and `numberOfTickets`. |
+
+## Error Planning
+
+| Error Case              | Related Endpoint      | Suitable Status Code | Explanation                                                                                                 |
+| :---------------------- | :-------------------- | :------------------- | :---------------------------------------------------------------------------------------------------------- |
+| **Event is fully booked** | `POST /bookings`      | `409 Conflict`       | The user tried to book an event that has no remaining capacity. The server state prevents fulfilling the request. |
+| **Booking already cancelled** | `DELETE /bookings/{bookingId}` | `409 Conflict`       | The user attempted to cancel a booking that is already in a "cancelled" state. No action can be taken.      |
+| **Required field missing**  | `POST /bookings`      | `400 Bad Request`    | The request body was missing a required field, such as `eventId` or `userEmail`. The request is malformed.    |
+| **Record does not exist**   | `GET /events/{eventId}` | `404 Not Found`      | The client requested an event with an ID that does not exist in the system.                                 |
+| **Invalid quantity**        | `POST /bookings`      | `400 Bad Request`    | The `numberOfTickets` was invalid (e.g., 0 or a negative number). The request is malformed.                 |
+
+---
+
+## REST Principles in Endpoint Design
+
+The endpoint names in this design follow REST principles because they are **resource-oriented nouns**, not action-based verbs. RESTful design dictates that the URL should identify the resource (e.g., `events`, `bookings`), while the HTTP method (`GET`, `POST`, `DELETE`) specifies the action to be performed on that resource.
+
+For example, instead of using action-style URLs like `/createBooking` or `/cancelBooking`, the design uses a single resource endpoint: `/bookings`.
+
+*   **`POST /bookings`**: The `POST` method clearly indicates the action is to **create** a new booking.
+*   **`GET /bookings/{bookingId}`**: The `GET` method indicates the action is to **retrieve** a specific booking.
+*   **`DELETE /bookings/{bookingId}`**: The `DELETE` method indicates the action is to **remove** a booking.
+
+This approach makes the API predictable, scalable, and intuitive. Developers can easily guess how to interact with different resources just by understanding this fundamental pattern.
+
+---
+
+
+## Reflection
+
+After this exercise, I better understand how **HTTP status codes and response bodies form a clear contract** between a client and server. Deliberately testing for errors like `404 Not Found` and `400 Bad Request` showed me that error responses are just as crucial as successful ones. A well-designed API uses status codes to communicate the outcome (`OK`, `Created`, `Not Found`) and the response body to provide details, enabling robust frontend applications that can handle both success and failure gracefully.
