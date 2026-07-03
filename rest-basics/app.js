@@ -1,54 +1,111 @@
-const events = [
-  {
-    id: "EV001",
-    title: "Tech Career Fair",
-    date: "2026-08-10",
-    venue: "Kuala Lumpur Convention Centre",
-    availableSeats: 120
-  },
-  {
-    id: "EV002",
-    title: "Web Development Bootcamp",
-    date: "2026-08-15",
-    venue: "Digital Learning Hub",
-    availableSeats: 35
-  },
-  {
-    id: "EV003",
-    title: "AI for Business Workshop",
-    date: "2026-08-20",
-    venue: "Innovation Centre",
-    availableSeats: 50
-  }
-];
+const API_BASE_URL = "http://localhost:8081/api";
 
-// Write your code below this line
-
-// REQUIREMENT 1: Select the event list/DOM element from the HTML.
+// --- DOM Element Selection ---
 const eventList = document.getElementById('eventList');
-
-// REQUIREMENT 2: Select the status text element from the HTML.
 const statusText = document.getElementById('statusText');
 
-// REQUIREMENT 3: Display every event inside the unordered list.
-// The forEach loop iterates through the events and appends each one to the list.
-events.forEach(event => {
-    // Create a new list item element for each event.
-    const listItem = document.createElement('li');
+/**
+ * Renders an array of events to the page.
+ * @param {Array<object>} eventsArray - The array of event objects to display.
+ */
+function renderEvents(eventsArray) {
+  // Clear the list before rendering to avoid duplicates
+  eventList.innerHTML = '';
 
-    // REQUIREMENT 4: Each event must show title, date, venue, and available seats.
-    // This line constructs the string with all the required event details.
+  if (eventsArray.length === 0) {
+    eventList.innerHTML = '<li>No events found.</li>';
+    return;
+  }
+
+  eventsArray.forEach(event => {
+    const listItem = document.createElement('li');
     let eventText = `${event.title} - ${event.date} - ${event.venue} - ${event.availableSeats} seats available`;
 
-    // Challenge Task: Add a note for events with limited seats.
+    // Add a note for events with limited seats
     if (event.availableSeats < 50) {
-        eventText += ' - Limited seats';
+      eventText += ' - Limited seats';
     }
 
-    // Set the text of the list item and append it to the list.
     listItem.textContent = eventText;
     eventList.appendChild(listItem);
-});
+  });
+}
 
-// REQUIREMENT 5: Update the status text after the events are displayed.
-statusText.textContent = `${events.length} event(s) displayed.`;
+/**
+ * Fetches all events from the API and displays them.
+ */
+async function loadAllEvents() {
+  statusText.textContent = "Loading events..."; // Show loading status
+  try {
+    const response = await fetch(`${API_BASE_URL}/events`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const events = await response.json();
+    renderEvents(events);
+    statusText.textContent = `${events.length} event(s) displayed.`; // Show success message
+  } catch (error) {
+    console.error("Failed to load events:", error);
+    statusText.textContent = "Error: Could not load events."; // Show error message
+    eventList.innerHTML = ''; // Clear the list on error
+  }
+}
+
+/**
+ * --- CHALLENGE TASK IMPLEMENTATION ---
+ * Dynamically creates and adds search UI to the page.
+ */
+function createSearchUI() {
+  const searchContainer = document.createElement('div');
+  searchContainer.style.marginTop = '20px';
+
+  const searchInput = document.createElement('input');
+  searchInput.id = 'eventIdInput';
+  searchInput.type = 'text';
+  searchInput.placeholder = 'Enter Event ID (e.g., EV001)';
+
+  const searchButton = document.createElement('button');
+  searchButton.textContent = 'Find Event';
+
+  const resetButton = document.createElement('button');
+  resetButton.textContent = 'Show All Events';
+
+  searchContainer.append(searchInput, searchButton, resetButton);
+  statusText.insertAdjacentElement('afterend', searchContainer);
+
+  // Add event listeners
+  searchButton.addEventListener('click', async () => {
+    const eventId = searchInput.value.trim();
+    if (!eventId) {
+      statusText.textContent = "Please enter an Event ID.";
+      return;
+    }
+
+    statusText.textContent = `Searching for event ${eventId}...`;
+    try {
+      const response = await fetch(`${API_BASE_URL}/events/${eventId}`);
+      if (response.status === 404) {
+        statusText.textContent = `Event with ID "${eventId}" was not found.`;
+        eventList.innerHTML = '';
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const event = await response.json();
+      renderEvents([event]); // renderEvents expects an array
+      statusText.textContent = `Displaying event ${eventId}.`;
+    } catch (error) {
+      console.error("Failed to search for event:", error);
+      statusText.textContent = "Error: Could not perform search.";
+    }
+  });
+
+  resetButton.addEventListener('click', loadAllEvents);
+}
+
+// --- Initial Page Load ---
+loadAllEvents();
+createSearchUI();

@@ -1,6 +1,29 @@
 const http = require("http");
 
-const PORT = 8081; // Changed port to avoid conflict
+const PORT = 8081;
+let events = [
+    {
+        id: "EV001",
+        title: "Tech Career Fair",
+        date: "2026-08-10",
+        venue: "Kuala Lumpur Convention Centre",
+        availableSeats: 120
+    },
+    {
+        id: "EV002",
+        title: "Web Development Bootcamp",
+        date: "2026-08-15",
+        venue: "Digital Learning Hub",
+        availableSeats: 35
+    },
+    {
+        id: "EV003",
+        title: "AI for Business Workshop",
+        date: "2026-08-20",
+        venue: "Innovation Centre",
+        availableSeats: 50
+    }
+];
 
 let courseOfferings = [
     {
@@ -131,6 +154,26 @@ const server = http.createServer(async (request, response) => {
         return;
     }
 
+    if (method === "GET" && url.pathname === "/api/events") {
+        sendJson(response, 200, events);
+        return;
+    }
+
+    const eventMatch = url.pathname.match(/^\/api\/events\/([^/]+)$/);
+
+    if (method === "GET" && eventMatch) {
+        const id = eventMatch[1];
+        const found = events.find(item => item.id === id);
+
+        if (!found) {
+            sendJson(response, 404, { message: `Event ${id} was not found` });
+            return;
+        }
+
+        sendJson(response, 200, found);
+        return;
+    }
+
     try {
         if (method === "GET" && url.pathname === "/api/health") {
             sendJson(response, 200, { status: "UP", service: "day-5-mock-api" });
@@ -234,6 +277,6 @@ const server = http.createServer(async (request, response) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Mock API running at http://localhost:${PORT}/`);
-    console.log(`Health check: GET http://localhost:${PORT}/api/health`);
+    console.log(`Mock API running at http://localhost:${PORT}`);
+    console.log(`Try GET http://localhost:${PORT}/api/health`);
 });
