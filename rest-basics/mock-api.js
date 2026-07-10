@@ -25,6 +25,9 @@ let events = [
     }
 ];
 
+// Part A: Create a Bookings Array
+let bookings = [];
+
 let courseOfferings = [
     {
         id: "CO001",
@@ -126,6 +129,28 @@ function validateCourseOffering(payload) {
     return errors;
 }
 
+function validateBooking(payload) {
+    const errors = [];
+
+    if (!payload.eventId || String(payload.eventId).trim() === "") {
+        errors.push({ field: "eventId", message: "Event ID is required" });
+    }
+
+    if (!payload.participantName || payload.participantName.trim() === "") {
+        errors.push({ field: "participantName", message: "Participant name is required" });
+    }
+
+    if (!payload.participantEmail || payload.participantEmail.trim() === "") {
+        errors.push({ field: "participantEmail", message: "Participant email is required" });
+    }
+
+    if (!Number.isInteger(payload.seats) || payload.seats < 1) {
+        errors.push({ field: "seats", message: "Seats must be a whole number greater than 0" });
+    }
+
+    return errors;
+}
+
 function validateInstructor(payload) {
     const errors = [];
 
@@ -171,6 +196,69 @@ const server = http.createServer(async (request, response) => {
         }
 
         sendJson(response, 200, found);
+        return;
+    }
+
+    if (method === "GET" && url.pathname === "/api/bookings") {
+        sendJson(response, 200, bookings);
+        return;
+    }
+
+    const bookingMatch = url.pathname.match(/^\/api\/bookings\/([^/]+)$/);
+
+    if (method === "GET" && bookingMatch) {
+        const id = bookingMatch[1];
+        const found = bookings.find(item => item.id === id);
+
+        if (!found) {
+            sendJson(response, 404, { message: `Booking ${id} was not found` });
+            return;
+        }
+
+        sendJson(response, 200, found);
+        return;
+    }
+
+    if (method === "POST" && url.pathname === "/api/bookings") {
+        const payload = await readJsonBody(request);
+        const errors = validateBooking(payload);
+
+        if (errors.length > 0) {
+            sendJson(response, 400, { message: "Validation failed", errors });
+            return;
+        }
+
+        const event = events.find(e => e.id === payload.eventId);
+        if (!event) {
+            sendJson(response, 404, { message: `Event with ID ${payload.eventId} not found.` });
+            return;
+        }
+
+        const event = events.find(e => e.id === payload.eventId);
+        if (!event) {
+            sendJson(response, 404, { message: `Event with ID ${payload.eventId} not found.` });
+            return;
+        }
+
+        if (event.availableSeats < payload.seats) {
+            sendJson(response, 409, { message: `Not enough seats available for event ${event.id}. Only ${event.availableSeats} left.` });
+            return;
+        }
+
+        // Update the event seats
+        event.availableSeats -= payload.seats;
+
+        const created = {
+            id: createId("BK", bookings.length),
+            eventId: payload.eventId,
+            participantName: payload.participantName.trim(),
+            participantEmail: payload.participantEmail.trim(),
+            seats: payload.seats,
+            status: "CONFIRMED"
+        };
+
+        bookings.push(created);
+        sendJson(response, 201, created);
         return;
     }
 
