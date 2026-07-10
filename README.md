@@ -51,3 +51,51 @@ The immediate results would be:
 *   **Full System Compromise:** An attacker could potentially use database features to execute commands on the underlying server, compromising the entire host machine.
 *   **Reputational and Legal Disaster:** The organization would face a complete loss of customer trust, massive financial penalties, and severe legal liability for failing to protect data.
 
+---
+
+## MongoDB Data Verification
+
+### How MongoDB Data Was Confirmed
+
+#### 1. MongoDB Connection Verification
+Connected to local MongoDB instance at `localhost:27017` and confirmed the `support_desk_db` database contains a `tickets` collection with live documents.
+
+#### 2. Data Source Validation
+Used mongosh shell to inspect the raw MongoDB document structure:
+```
+use support_desk_db
+db.tickets.findOne()
+```
+
+**Result:** Confirmed the collection contains documents with:
+- `_id`: ObjectId type (MongoDB's native ID format)
+- `title`, `description`, `category`, `priority`, `status`: String fields
+- `createdAt`: ISODate type (MongoDB's native timestamp format)
+- `createdBy`: String field
+
+#### 3. Test Data Confirmation
+Verified a specific ticket document exists with ID `6a5067eb6ee600352a65d89d`:
+```
+db.tickets.findOne({_id: ObjectId("6a5067eb6ee600352a65d89d")})
+```
+
+**Result:** Retrieved a complete ticket record matching the Java entity structure.
+
+#### 4. Type Mapping Alignment
+Ensured Java entity types align with MongoDB BSON types:
+- MongoDB `_id` (ObjectId) → Java `ObjectId` (not String)
+- MongoDB `createdAt` (ISODate) → Java `OffsetDateTime` (not LocalDateTime)
+- MongoDB String fields → Java String fields
+
+#### 5. Application Data Flow
+The Spring Boot application reads MongoDB documents through:
+1. `TicketRepository` extends `MongoRepository<Ticket, ObjectId>`
+2. Spring Data MongoDB automatically deserializes BSON documents to Java entities
+3. `TicketService` converts entities to `TicketResponse` DTOs for API responses
+4. `TicketController` exposes REST endpoints that return the transformed DTO objects
+
+**Configuration:** `application.properties` specifies `spring.data.mongodb.uri=mongodb://localhost:27017/support_desk_db`
+
+### Conclusion
+The ticket data in the REST API responses originates directly from MongoDB. The Java entity model correctly maps to the MongoDB document structure, enabling Spring Data MongoDB to deserialize BSON documents into Java objects seamlessly.
+

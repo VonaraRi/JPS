@@ -1,20 +1,10 @@
-package com.example.supportdesk.model;
+package com.example.supportdesk.dto;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
-/**
- * Represents a support ticket document in the 'tickets' collection.
- */
-@Document(collection = "tickets")
-public class Ticket {
+public class TicketResponse {
 
-    @Id
-    private ObjectId id;
+    private String id;
     private String title;
     private String description;
     private String category;
@@ -23,11 +13,25 @@ public class Ticket {
     private String createdBy;
     private OffsetDateTime createdAt;
 
-    public ObjectId getId() {
+    public TicketResponse() {
+    }
+
+    public TicketResponse(String id, String title, String description, String category, String priority, String status, String createdBy, OffsetDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.priority = priority;
+        this.status = status;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
