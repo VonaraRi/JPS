@@ -1,11 +1,9 @@
 package com.example.supportdesk.model;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 /**
  * Represents a support ticket document in the 'tickets' collection.
@@ -14,20 +12,20 @@ import java.time.OffsetDateTime;
 public class Ticket {
 
     @Id
-    private ObjectId id;
+    private String id;
     private String title;
     private String description;
     private String category;
     private String priority;
     private String status;
     private String createdBy;
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -79,11 +77,11 @@ public class Ticket {
         this.createdBy = createdBy;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

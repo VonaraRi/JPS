@@ -1,8 +1,32 @@
 ### Get all tickets
-GET http://localhost:8080/api/tickets
+GET http://localhost:8082/api/tickets
 
 ### Get one existing ticket
-GET http://localhost:8080/api/tickets/6a5067eb6ee600352a65d89d
+GET http://localhost:8082/api/tickets/6a51e41521c1ecf8f0a0a40f
 
 ### Get one missing ticket
-GET http://localhost:8080/api/tickets/000000000000000000000000
+GET http://localhost:8081/api/tickets/000000000000000000000000
+
+### Create a valid ticket (201 Created)
+POST http://localhost:8081/api/tickets
+Content-Type: application/json
+
+{
+  "title": "VPN connection drops frequently",
+  "description": "The secure global VPN disconnects automatically every 10 to 15 minutes while working remotely.",
+  "category": "Network",
+  "priority": "High",
+  "createdBy": "Adam"
+}
+
+### Create an invalid ticket (400 Bad Request)
+POST http://localhost:8080/api/tickets
+Content-Type: application/json
+
+{
+  "title": "",
+  "description": "",
+  "category": "",
+  "priority": "",
+  "createdBy": ""
+}

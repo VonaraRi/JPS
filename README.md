@@ -68,7 +68,7 @@ db.tickets.findOne()
 ```
 
 **Result:** Confirmed the collection contains documents with:
-- `_id`: ObjectId type (MongoDB's native ID format)
+- `_id`: String type (application-managed identifier)
 - `title`, `description`, `category`, `priority`, `status`: String fields
 - `createdAt`: ISODate type (MongoDB's native timestamp format)
 - `createdBy`: String field
@@ -76,14 +76,14 @@ db.tickets.findOne()
 #### 3. Test Data Confirmation
 Verified a specific ticket document exists with ID `6a5067eb6ee600352a65d89d`:
 ```
-db.tickets.findOne({_id: ObjectId("6a5067eb6ee600352a65d89d")})
+db.tickets.findOne({_id: "6a5067eb6ee600352a65d89d"})
 ```
 
 **Result:** Retrieved a complete ticket record matching the Java entity structure.
 
 #### 4. Type Mapping Alignment
-Ensured Java entity types align with MongoDB BSON types:
-- MongoDB `_id` (ObjectId) → Java `ObjectId` (not String)
+Ensured Java entity types align with MongoDB document field types:
+- MongoDB `_id` (String) → Java `String` (not ObjectId)
 - MongoDB `createdAt` (ISODate) → Java `OffsetDateTime` (not LocalDateTime)
 - MongoDB String fields → Java String fields
 
@@ -97,5 +97,5 @@ The Spring Boot application reads MongoDB documents through:
 **Configuration:** `application.properties` specifies `spring.data.mongodb.uri=mongodb://localhost:27017/support_desk_db`
 
 ### Conclusion
-The ticket data in the REST API responses originates directly from MongoDB. The Java entity model correctly maps to the MongoDB document structure, enabling Spring Data MongoDB to deserialize BSON documents into Java objects seamlessly.
+The ticket data in the REST API responses originates directly from MongoDB. The Java entity model correctly maps to the MongoDB document structure, enabling Spring Data MongoDB to deserialize MongoDB documents into Java objects seamlessly.
 
