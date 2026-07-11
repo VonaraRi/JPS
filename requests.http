@@ -1,7 +1,3 @@
-### =========================================================================
-### 1. CORE FETCH OPERATIONS (GET)
-### =========================================================================
-
 ### Get all tickets (Unfiltered)
 GET http://localhost:8082/api/tickets
 
@@ -12,9 +8,7 @@ GET http://localhost:8082/api/tickets/6a51e41521c1ecf8f0a0a40f
 GET http://localhost:8082/api/tickets/000000000000000000000000
 
 
-### =========================================================================
 ### 2. TICKET CREATION OPERATIONS (POST)
-### =========================================================================
 
 ### Create a valid ticket (Should return 201 Created)
 POST http://localhost:8082/api/tickets
@@ -40,10 +34,7 @@ Content-Type: application/json
   "createdBy": ""
 }
 
-
-### =========================================================================
 ### 3. EXERCISE 8.1: DYNAMIC QUERY FILTERS
-### =========================================================================
 
 ### Filter by Status
 GET http://localhost:8082/api/tickets?status=Open
@@ -55,8 +46,22 @@ GET http://localhost:8082/api/tickets?priority=High
 GET http://localhost:8082/api/tickets?category=Network
 
 
+### 4. EXERCISE 8.2: Add Ticket Pagination and Sorting
+### Get Page 0 with Default configurations (Size 5, Descending by Date)
+GET http://localhost:8082/api/tickets/paged
+
+### Get Page 0 with explicit limits (First 2 tickets only)
+GET http://localhost:8082/api/tickets/paged?page=0&size=2
+
+### Get Page 1 with explicit limits (Next 2 tickets)
+GET http://localhost:8082/api/tickets/paged?page=1&size=2
+
+### Get Page 0 sorted by priority ascending
+GET http://localhost:8082/api/tickets/paged?page=0&size=5&sortBy=priority&direction=asc
+
+
 ### =========================================================================
-### 4. DUMMY DATA SEEDING SETUP
+### DUMMY DATA SEEDING SETUP
 ### =========================================================================
 
 ### Create Dummy Ticket 1 (Network / High)

@@ -6,6 +6,10 @@ import com.example.supportdesk.model.Ticket;
 import com.example.supportdesk.repository.TicketRepository;
 import com.example.supportdesk.dto.CreateTicketRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,6 +67,18 @@ public class TicketService {
         Ticket savedTicket = ticketRepository.save(ticket);
         return mapToResponse(savedTicket);
     }
+
+    public Page<TicketResponse> getAllTicketsPaged(int page, int size, String sortBy, String direction) {
+    // Determine the sorting order direction rule
+    Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+    
+    // Create the pageable configuration item
+    Pageable pageable = PageRequest.of(page, size, sort);
+    
+    // Fetch the paginated documents and cleanly map the inner list to your DTO
+    return ticketRepository.findAll(pageable)
+            .map(this::mapToResponse);
+}
 
     // Helper method to cleanly map your MongoDB Entity (Ticket) to your DTO (TicketResponse)
     private TicketResponse mapToResponse(Ticket ticket) {

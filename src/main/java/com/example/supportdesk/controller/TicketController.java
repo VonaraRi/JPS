@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -57,4 +58,15 @@ public class TicketController {
         TicketResponse response = ticketService.createTicket(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED); 
     }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<TicketResponse>> getAllPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+        
+        Page<TicketResponse> pagedTickets = ticketService.getAllTicketsPaged(page, size, sortBy, direction);
+        return ResponseEntity.ok(pagedTickets);
+}
 }
