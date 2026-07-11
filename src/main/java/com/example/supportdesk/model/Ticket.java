@@ -1,6 +1,7 @@
 package com.example.supportdesk.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -13,12 +14,23 @@ public class Ticket {
 
     @Id
     private String id;
+
     private String title;
     private String description;
+    
+    @Indexed // Speeds up ?category=... filters
     private String category;
+
+    @Indexed // Speeds up ?priority=... filters
     private String priority;
+
+    @Indexed // Speeds up ?status=... filters
     private String status;
+
+    @Indexed // Speeds up user specific lookups
     private String createdBy;
+
+    @Indexed // Speeds up sorting operations by date
     private Instant createdAt;
 
     public String getId() {
