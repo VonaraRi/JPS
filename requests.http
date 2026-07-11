@@ -117,3 +117,25 @@ Content-Type: application/json
   "priority": "Critical",
   "createdBy": "Amir"
 }
+
+### =========================================================================
+### 5. EDGE CASES & ERROR HANDLING TESTS
+### =========================================================================
+
+### Test 1: Invalid Status Value (Should return empty list or custom error)
+GET http://localhost:8082/api/tickets?status=INVALID
+
+### Test 2: Invalid Priority Value (Fixed Port to 8082)
+GET http://localhost:8082/api/tickets?priority=URGENT
+
+### Test 3: Out-of-Bounds Page Number (Should return empty content array)
+GET http://localhost:8082/api/tickets/paged?page=99&size=5
+
+### Test 4: Extremely Large Page Size
+GET http://localhost:8082/api/tickets/paged?page=0&size=100
+
+### Test 5: Unknown Sort Field (Verifies fallback sorting logic)
+GET http://localhost:8082/api/tickets/paged?page=0&size=5&sortBy=unknownField&direction=asc
+
+### Test 6: Combined Filters (Fixed Port to 8082 & matched DB casing)
+GET http://localhost:8082/api/tickets?status=Open&priority=High
