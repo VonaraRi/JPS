@@ -1,13 +1,22 @@
-### Get all tickets
+### =========================================================================
+### 1. CORE FETCH OPERATIONS (GET)
+### =========================================================================
+
+### Get all tickets (Unfiltered)
 GET http://localhost:8082/api/tickets
 
-### Get one existing ticket
+### Get one existing ticket (Make sure ID matches an active document in your DB)
 GET http://localhost:8082/api/tickets/6a51e41521c1ecf8f0a0a40f
 
-### Get one missing ticket
+### Get one missing ticket (Verifies your 404 Custom Exception Handling)
 GET http://localhost:8082/api/tickets/000000000000000000000000
 
-### Create a valid ticket (201 Created)
+
+### =========================================================================
+### 2. TICKET CREATION OPERATIONS (POST)
+### =========================================================================
+
+### Create a valid ticket (Should return 201 Created)
 POST http://localhost:8082/api/tickets
 Content-Type: application/json
 
@@ -19,8 +28,8 @@ Content-Type: application/json
   "createdBy": "Adam"
 }
 
-### Create an invalid ticket (400 Bad Request)
-POST http://localhost:8080/api/tickets
+### Create an invalid ticket (Should return 400 Bad Request)
+POST http://localhost:8082/api/tickets
 Content-Type: application/json
 
 {
@@ -29,4 +38,59 @@ Content-Type: application/json
   "category": "",
   "priority": "",
   "createdBy": ""
+}
+
+
+### =========================================================================
+### 3. EXERCISE 8.1: DYNAMIC QUERY FILTERS
+### =========================================================================
+
+### Filter by Status
+GET http://localhost:8082/api/tickets?status=Open
+
+### Filter by Priority
+GET http://localhost:8082/api/tickets?priority=High
+
+### Filter by Category
+GET http://localhost:8082/api/tickets?category=Network
+
+
+### =========================================================================
+### 4. DUMMY DATA SEEDING SETUP
+### =========================================================================
+
+### Create Dummy Ticket 1 (Network / High)
+POST http://localhost:8082/api/tickets
+Content-Type: application/json
+
+{
+  "title": "Wi-Fi Authentication Failure",
+  "description": "Unable to connect to the secure campus Wi-Fi network from Lab 1.",
+  "category": "Network",
+  "priority": "High",
+  "createdBy": "Rionnalyn"
+}
+
+### Create Dummy Ticket 2 (Software / Medium)
+POST http://localhost:8082/api/tickets
+Content-Type: application/json
+
+{
+  "title": "Java Fundamentals IDE Error",
+  "description": "IntelliJ IDEA shows an internal SDK loading error when launching projects.",
+  "category": "Software",
+  "priority": "Medium",
+  "createdBy": "Sarah"
+}
+
+### Create Dummy Ticket 3 (Database / Critical)
+POST http://localhost:8082/api/tickets
+Content-Type: application/json
+
+{
+  "title": "MySQL Root Access Denied",
+  "description": "Database server refuses connections with Access Denied for user root.",
+  "category": "Database",
+  "priority": "Critical",
+  "createdBy": "Amir"
 }

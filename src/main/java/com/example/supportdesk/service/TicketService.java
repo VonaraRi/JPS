@@ -22,10 +22,22 @@ public class TicketService {
     }
 
     // 2. Fetch all tickets from MongoDB and map them to TicketResponse DTOs
-    public List<TicketResponse> getAllTickets() {
-        return ticketRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public List<TicketResponse> getAllTickets(String status, String priority, String category) {
+    List<Ticket> tickets;
+
+    if (status != null && !status.trim().isEmpty()) {
+        tickets = ticketRepository.findByStatus(status);
+    } else if (priority != null && !priority.trim().isEmpty()) {
+        tickets = ticketRepository.findByPriority(priority);
+    } else if (category != null && !category.trim().isEmpty()) {
+        tickets = ticketRepository.findByCategory(category);
+    } else {
+        tickets = ticketRepository.findAll(); // Default: return all tickets
+    }
+
+    return tickets.stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
     }
 
     // 3. Fetch a single ticket by its ID from MongoDB
