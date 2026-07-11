@@ -5,10 +5,10 @@ GET http://localhost:8082/api/tickets
 GET http://localhost:8082/api/tickets/6a51e41521c1ecf8f0a0a40f
 
 ### Get one missing ticket
-GET http://localhost:8081/api/tickets/000000000000000000000000
+GET http://localhost:8082/api/tickets/000000000000000000000000
 
 ### Create a valid ticket (201 Created)
-POST http://localhost:8081/api/tickets
+POST http://localhost:8082/api/tickets
 Content-Type: application/json
 
 {

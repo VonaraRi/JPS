@@ -4,10 +4,12 @@ import com.example.supportdesk.dto.TicketResponse;
 import com.example.supportdesk.exception.NotFoundException;
 import com.example.supportdesk.model.Ticket;
 import com.example.supportdesk.repository.TicketRepository;
+import com.example.supportdesk.dto.CreateTicketRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.Instant;
 
 @Service
 public class TicketService {
@@ -31,6 +33,23 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ticket not found: " + id));
         return mapToResponse(ticket);
+    }
+
+    // 4. Create a new ticket and save it to MongoDB
+    public TicketResponse createTicket(CreateTicketRequest request) {
+        Ticket ticket = new Ticket();
+        ticket.setTitle(request.getTitle());
+        ticket.setDescription(request.getDescription());
+        ticket.setCategory(request.getCategory());
+        ticket.setPriority(request.getPriority());
+        ticket.setCreatedBy(request.getCreatedBy());
+        
+        // Set default backend values automatically
+        ticket.setStatus("Open");
+        ticket.setCreatedAt(Instant.now());
+
+        Ticket savedTicket = ticketRepository.save(ticket);
+        return mapToResponse(savedTicket);
     }
 
     // Helper method to cleanly map your MongoDB Entity (Ticket) to your DTO (TicketResponse)
