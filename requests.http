@@ -1,4 +1,8 @@
-### Get all tickets (Unfiltered)
+### =========================================================================
+### 1. BASIC CRUD OPERATIONS
+### =========================================================================
+
+### Get all tickets (Unfiltered) - REQUIRED
 GET http://localhost:8082/api/tickets
 
 ### Get one existing ticket (Make sure ID matches an active document in your DB)
@@ -8,7 +12,9 @@ GET http://localhost:8082/api/tickets/6a51e41521c1ecf8f0a0a40f
 GET http://localhost:8082/api/tickets/000000000000000000000000
 
 
+### =========================================================================
 ### 2. TICKET CREATION OPERATIONS (POST)
+### =========================================================================
 
 ### Create a valid ticket (Should return 201 Created)
 POST http://localhost:8082/api/tickets
@@ -34,30 +40,42 @@ Content-Type: application/json
   "createdBy": ""
 }
 
-### 3. EXERCISE 8.1: DYNAMIC QUERY FILTERS
 
-### Filter by Status
-GET http://localhost:8082/api/tickets?status=Open
+### =========================================================================
+### 3. EXERCISE 8.1 / PART A: DYNAMIC QUERY FILTERS
+### =========================================================================
 
-### Filter by Priority
-GET http://localhost:8082/api/tickets?priority=High
+### Filter by Status (OPEN) - REQUIRED
+GET http://localhost:8082/api/tickets?status=OPEN
 
-### Filter by Category
+### Filter by Priority (HIGH) - REQUIRED
+GET http://localhost:8082/api/tickets?priority=HIGH
+
+### Filter by Category (Email) - REQUIRED
+GET http://localhost:8082/api/tickets?category=Email
+
+### Filter by Category (Network)
 GET http://localhost:8082/api/tickets?category=Network
 
 
-### 4. EXERCISE 8.2: Add Ticket Pagination and Sorting
-### Get Page 0 with Default configurations (Size 5, Descending by Date)
+### =========================================================================
+### 4. EXERCISE 8.2 / PART A: PAGINATION AND SORTING
+### =========================================================================
+
+### Paginated Tickets - Page 0, Size 5 - REQUIRED
+GET http://localhost:8082/api/tickets/paged?page=0&size=5
+
+### Paginated Tickets - Page 1, Size 5 - REQUIRED
+GET http://localhost:8082/api/tickets/paged?page=1&size=5
+
+### Paginated, Sorted, and Directed Request - REQUIRED
+GET http://localhost:8082/api/tickets/paged?page=0&size=5&sortBy=createdAt&direction=desc
+
+### Get Page 0 with Default configurations (Fallback)
 GET http://localhost:8082/api/tickets/paged
 
 ### Get Page 0 with explicit limits (First 2 tickets only)
 GET http://localhost:8082/api/tickets/paged?page=0&size=2
-
-### Get Page 1 with explicit limits (Next 2 tickets)
-GET http://localhost:8082/api/tickets/paged?page=1&size=2
-
-### Get Page 0 sorted by priority ascending
-GET http://localhost:8082/api/tickets/paged?page=0&size=5&sortBy=priority&direction=asc
 
 
 ### =========================================================================
