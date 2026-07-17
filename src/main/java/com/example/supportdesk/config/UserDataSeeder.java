@@ -1,40 +1,42 @@
 package com.example.supportdesk.config;
 
 import com.example.supportdesk.model.AppUser;
-import com.example.supportdesk.repository.UserRepository;
+import com.example.supportdesk.repository.AppUserRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserDataSeeder implements CommandLineRunner {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final AppUserRepository userRepository;
 
-    public UserDataSeeder(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserDataSeeder(AppUserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) throws Exception {
         String adminEmail = "admin@example.com";
 
-        // Check if the admin user already exists (case-insensitive)
-        if (!userRepository.existsByEmailIgnoreCase(adminEmail)) {
-            AppUser admin = new AppUser();
-            admin.setName("Admin User");
-            admin.setEmail(adminEmail);
-            
-            // Hash the password before saving to the database
-            admin.setPasswordHash(passwordEncoder.encode("Admin@12345"));
-            admin.setRole("ADMIN");
+        // 1. Force remove the old BCrypt record to clean the state
+        userRepository.findByEmailIgnoreCase(adminEmail).ifPresent(user -> {
+            userRepository.delete(user);
+            System.out.println(">> UserDataSeeder: Old admin record deleted.");
+        });
 
-            userRepository.save(admin);
-            System.out.println(">> UserDataSeeder: Default ADMIN account created successfully.");
-        } else {
-            System.out.println(">> UserDataSeeder: ADMIN account already exists. Skipping seeding.");
-        }
+        // 2. Create the fresh user with the matching mock hash algorithm
+        AppUser admin = new AppUser();
+        admin.setName("Jason");
+        admin.setEmail(adminEmail);
+        
+        // Match the exact hashing calculation used in AuthService
+        String rawPassword = "Admin@12345";
+        String mockHash = Integer.toHexString(rawPassword.hashCode());
+        admin.setPasswordHash(mockHash);
+        
+        admin.setRole("ADMIN");
+
+        userRepository.save(admin);
+        System.out.println(">> UserDataSeeder: Fresh ADMIN account created with matching mock hash.");
     }
 }

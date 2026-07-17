@@ -1,0 +1,79 @@
+@userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGljZSIsInN1YiI6ImFsaWNlQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg0Mjc4NjI4LCJleHAiOjE3ODQzNjUwMjh9.zHT37h8pahxVwzXqKfk53OMIiSJVZCz32RULbh2Ydr0
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDI3OTUzNywiZXhwIjoxNzg0MzY1OTM3fQ.7mbBuWA8gNyVmcR3-mREVDvGmqDp40ksep2rg-XxEhU
+
+### ==========================================
+### SUPPORT DESK TICKET API SECURITY TESTS
+### ==========================================
+
+### 1. Health endpoint is public (Should return 200 OK)
+GET http://localhost:8082/api/health
+
+
+### 2. Ticket endpoint without token returns 401
+GET http://localhost:8082/api/tickets
+
+
+### 3. Register user returns token (Should return 201 Created)
+POST http://localhost:8082/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Alice",
+  "email": "alice@example.com",
+  "password": "mySecurePassword123"
+}
+
+
+### 4. Login user returns token (Should return 200 OK)
+POST http://localhost:8082/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "mySecurePassword123"
+}
+
+
+### 5. Ticket endpoint with token returns 200
+GET http://localhost:8082/api/tickets
+Authorization: Bearer {{userToken}}
+
+
+### 6. Create ticket with normal USER token returns 403
+POST http://localhost:8082/api/tickets
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "title": "Broken Screen",
+  "description": "The monitor in lab 3 is flashing green.",
+  "category": "Software",
+  "priority": "Medium",
+  "status": "Open",
+  "createdBy": "Alice"
+}
+
+
+### 7. Login admin returns token (Should return 200 OK)
+POST http://localhost:8082/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "Admin@12345"
+}
+
+
+### 8. Create ticket with ADMIN token returns 201
+POST http://localhost:8082/api/tickets
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "title": "Server Outage",
+  "description": "Production database is not responding to connections.",
+  "category": "Database",
+  "priority": "Critical",
+  "status": "Open",
+  "createdBy": "Jason"
+}
