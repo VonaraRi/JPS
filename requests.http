@@ -1,141 +1,37 @@
-### =========================================================================
-### 1. BASIC CRUD OPERATIONS
-### =========================================================================
-
-### Get all tickets (Unfiltered) - REQUIRED
-GET http://localhost:8082/api/tickets
-
-### Get one existing ticket (Make sure ID matches an active document in your DB)
-GET http://localhost:8082/api/tickets/6a51e41521c1ecf8f0a0a40f
-
-### Get one missing ticket (Verifies your 404 Custom Exception Handling)
-GET http://localhost:8082/api/tickets/000000000000000000000000
-
-
-### =========================================================================
-### 2. TICKET CREATION OPERATIONS (POST)
-### =========================================================================
-
-### Create a valid ticket (Should return 201 Created)
-POST http://localhost:8082/api/tickets
+### Register a New Account (Should pass rules successfully)
+POST http://localhost:8082/api/auth/register
 Content-Type: application/json
 
 {
-  "title": "VPN connection drops frequently",
-  "description": "The secure global VPN disconnects automatically every 10 to 15 minutes while working remotely.",
-  "category": "Network",
-  "priority": "High",
-  "createdBy": "Adam"
+  "name": "Alex",
+  "email": "alex@example.com",
+  "password": "mySecurePassword123"
 }
 
-### Create an invalid ticket (Should return 400 Bad Request)
-POST http://localhost:8082/api/tickets
+### Test Duplicate Email Rejection (Should return 400 Bad Request)
+POST http://localhost:8082/api/auth/register
 Content-Type: application/json
 
 {
-  "title": "",
-  "description": "",
-  "category": "",
-  "priority": "",
-  "createdBy": ""
+  "name": "Alex Fake",
+  "email": "alex@example.com",
+  "password": "differentPassword"
 }
 
-
-### =========================================================================
-### 3. EXERCISE 8.1 / PART A: DYNAMIC QUERY FILTERS
-### =========================================================================
-
-### Filter by Status (OPEN) - REQUIRED
-GET http://localhost:8082/api/tickets?status=OPEN
-
-### Filter by Priority (HIGH) - REQUIRED
-GET http://localhost:8082/api/tickets?priority=HIGH
-
-### Filter by Category (Email) - REQUIRED
-GET http://localhost:8082/api/tickets?category=Email
-
-### Filter by Category (Network)
-GET http://localhost:8082/api/tickets?category=Network
-
-
-### =========================================================================
-### 4. EXERCISE 8.2 / PART A: PAGINATION AND SORTING
-### =========================================================================
-
-### Paginated Tickets - Page 0, Size 5 - REQUIRED
-GET http://localhost:8082/api/tickets/paged?page=0&size=5
-
-### Paginated Tickets - Page 1, Size 5 - REQUIRED
-GET http://localhost:8082/api/tickets/paged?page=1&size=5
-
-### Paginated, Sorted, and Directed Request - REQUIRED
-GET http://localhost:8082/api/tickets/paged?page=0&size=5&sortBy=createdAt&direction=desc
-
-### Get Page 0 with Default configurations (Fallback)
-GET http://localhost:8082/api/tickets/paged
-
-### Get Page 0 with explicit limits (First 2 tickets only)
-GET http://localhost:8082/api/tickets/paged?page=0&size=2
-
-
-### =========================================================================
-### DUMMY DATA SEEDING SETUP
-### =========================================================================
-
-### Create Dummy Ticket 1 (Network / High)
-POST http://localhost:8082/api/tickets
+### User Successful Login (Should return 200 with JWT)
+POST http://localhost:8082/api/auth/login
 Content-Type: application/json
 
 {
-  "title": "Wi-Fi Authentication Failure",
-  "description": "Unable to connect to the secure campus Wi-Fi network from Lab 1.",
-  "category": "Network",
-  "priority": "High",
-  "createdBy": "Rionnalyn"
+  "email": "alex@example.com",
+  "password": "mySecurePassword123"
 }
 
-### Create Dummy Ticket 2 (Software / Medium)
-POST http://localhost:8082/api/tickets
+### User Invalid Login Credentials (Should return 401 Unauthorized)
+POST http://localhost:8082/api/auth/login
 Content-Type: application/json
 
 {
-  "title": "Java Fundamentals IDE Error",
-  "description": "IntelliJ IDEA shows an internal SDK loading error when launching projects.",
-  "category": "Software",
-  "priority": "Medium",
-  "createdBy": "Sarah"
+  "email": "alex@example.com",
+  "password": "wrongPassword"
 }
-
-### Create Dummy Ticket 3 (Database / Critical)
-POST http://localhost:8082/api/tickets
-Content-Type: application/json
-
-{
-  "title": "MySQL Root Access Denied",
-  "description": "Database server refuses connections with Access Denied for user root.",
-  "category": "Database",
-  "priority": "Critical",
-  "createdBy": "Amir"
-}
-
-### =========================================================================
-### 5. EDGE CASES & ERROR HANDLING TESTS
-### =========================================================================
-
-### Test 1: Invalid Status Value (Should return empty list or custom error)
-GET http://localhost:8082/api/tickets?status=INVALID
-
-### Test 2: Invalid Priority Value (Fixed Port to 8082)
-GET http://localhost:8082/api/tickets?priority=URGENT
-
-### Test 3: Out-of-Bounds Page Number (Should return empty content array)
-GET http://localhost:8082/api/tickets/paged?page=99&size=5
-
-### Test 4: Extremely Large Page Size
-GET http://localhost:8082/api/tickets/paged?page=0&size=100
-
-### Test 5: Unknown Sort Field (Verifies fallback sorting logic)
-GET http://localhost:8082/api/tickets/paged?page=0&size=5&sortBy=unknownField&direction=asc
-
-### Test 6: Combined Filters (Fixed Port to 8082 & matched DB casing)
-GET http://localhost:8082/api/tickets?status=Open&priority=High
