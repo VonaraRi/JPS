@@ -1,24 +1,33 @@
-### Register a New Account (Should pass rules successfully)
+@userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGV4Iiwic3ViIjoiYWxleEBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDI3Njk3MywiZXhwIjoxNzg0MzYzMzczfQ.M-TQ6xj9pkUluOC-JnMpq7Iw66uehoVnjsU_4CdQHMo
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiUmlvIEFkbWluIiwic3ViIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3ODQyNzY5NDUsImV4cCI6MTc4NDM2MzM0NX0.DSFS9qpSRIY7vf7eJ0v9FVMpa3XHnHjquuAw01tUOao
+
+### ==========================================
+### AUTHENTICATION & REGISTRATION ENDPOINTS (PUBLIC)
+### ==========================================
+
+### A1. Register a USER Account
 POST http://localhost:8082/api/auth/register
 Content-Type: application/json
 
 {
-  "name": "Alex",
+  "name": "Alex User",
   "email": "alex@example.com",
-  "password": "mySecurePassword123"
+  "password": "mySecurePassword123",
+  "role": "USER"
 }
 
-### Test Duplicate Email Rejection (Should return 400 Bad Request)
+### A2. Register an ADMIN Account
 POST http://localhost:8082/api/auth/register
 Content-Type: application/json
 
 {
-  "name": "Alex Fake",
-  "email": "alex@example.com",
-  "password": "differentPassword"
+  "name": "Rio Admin",
+  "email": "admin@example.com",
+  "password": "adminPassword123",
+  "role": "ADMIN"
 }
 
-### User Successful Login (Should return 200 with JWT)
+### A3. Login as USER (Get your USER token here)
 POST http://localhost:8082/api/auth/login
 Content-Type: application/json
 
@@ -27,11 +36,69 @@ Content-Type: application/json
   "password": "mySecurePassword123"
 }
 
-### User Invalid Login Credentials (Should return 401 Unauthorized)
+### A4. Login as ADMIN (Get your ADMIN token here)
 POST http://localhost:8082/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "alex@example.com",
-  "password": "wrongPassword"
+  "email": "admin@example.com",
+  "password": "adminPassword123"
+}
+
+
+### Test Register (Without role)
+POST http://localhost:8082/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Alex User",
+  "email": "alex_test@example.com",
+  "password": "mySecurePassword123"
+}
+
+### ==========================================
+### TICKET API SECURITY TESTS
+### ==========================================
+
+### 1. GET /api/health (Should be Public -> 200 OK)
+GET http://localhost:8082/api/health
+
+
+### 2. GET /api/tickets WITHOUT Token (Should return 401 Unauthorized)
+GET http://localhost:8082/api/tickets
+
+
+### 3. GET /api/tickets WITH USER Token (Should return 200 OK)
+GET http://localhost:8082/api/tickets
+Authorization: Bearer {{userToken}}
+
+
+### 4. GET /api/tickets/{id} WITH USER Token (Should return 200 OK)
+GET http://localhost:8082/api/tickets/6a51ed2b837a33b12a8318fe
+Authorization: Bearer {{userToken}}
+
+
+### 5. POST /api/tickets WITH USER Token (Should return 403 Forbidden)
+POST http://localhost:8082/api/tickets
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "title": "Broken Screen",
+  "description": "The monitor in lab 3 is flashing green."
+}
+
+
+### 6. POST /api/tickets WITH ADMIN Token (Should return 201 Created)
+POST http://localhost:8082/api/tickets
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "title": "Server Outage",
+  "description": "Production database is not responding to connections.",
+  "category": "Database",
+  "priority": "Critical",
+  "status": "Open",
+  "createdBy": "Alex Admin"
 }
