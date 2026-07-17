@@ -1,5 +1,5 @@
 @userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGV4Iiwic3ViIjoiYWxleEBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDI3Njk3MywiZXhwIjoxNzg0MzYzMzczfQ.M-TQ6xj9pkUluOC-JnMpq7Iw66uehoVnjsU_4CdQHMo
-@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiUmlvIEFkbWluIiwic3ViIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3ODQyNzY5NDUsImV4cCI6MTc4NDM2MzM0NX0.DSFS9qpSRIY7vf7eJ0v9FVMpa3XHnHjquuAw01tUOao
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiUmlvIEFkbWluIiwic3ViIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3ODQyNzgxMzIsImV4cCI6MTc4NDM2NDUzMn0.8tkenp4uZ_siO-hT9WXUt0-u2VxKQfpMdal8jRIZhvo
 
 ### ==========================================
 ### AUTHENTICATION & REGISTRATION ENDPOINTS (PUBLIC)

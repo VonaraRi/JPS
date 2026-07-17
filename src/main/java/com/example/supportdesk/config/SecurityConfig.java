@@ -6,6 +6,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // <-- Add this import
+import org.springframework.security.crypto.password.PasswordEncoder;     // <-- Add this import
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -19,15 +21,20 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
+    // 1. Define the PasswordEncoder bean here so both Spring Security and your Seeder can use it
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Disable CSRF since APIs are stateless (token-based)
+            // Disable CSRF since APIs are stateless (token-based)
             .csrf(csrf -> csrf.disable())
             
-            // 2. Set authorization rules
+            // Set authorization rules
             .authorizeHttpRequests(auth -> auth
-                // Allow the error dispatcher so you can see real exceptions instead of a silent 403
                 .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
                 .requestMatchers("/error").permitAll()
 
@@ -47,7 +54,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             
-            // 3. Force Spring Security to return 401 Unauthorized when an unauthenticated request attempts access
+            // Force Spring Security to return 401 Unauthorized when an unauthenticated request attempts access
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setContentType("application/json");
@@ -56,12 +63,12 @@ public class SecurityConfig {
                 })
             )
             
-            // 4. Keep sessions stateless
+            // Keep sessions stateless
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             
-            // 5. Add your JWT filter
+            // Add your JWT filter
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
