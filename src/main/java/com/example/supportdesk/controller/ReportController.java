@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/v1/reports")
@@ -23,4 +25,11 @@ public class ReportController {
     public ResponseEntity<List<ReportCountResponse>> getTicketsByStatus() {
         return ResponseEntity.ok(ticketReportService.getTicketsCountByStatus());
     }
+
+    @GetMapping("/tickets-by-priority")
+    public ResponseEntity<List<ReportCountResponse>> getTicketsByPriority() {
+        return ResponseEntity.ok(ticketReportService.getTicketsCountByPriority());
+    }
+    
+    
 }

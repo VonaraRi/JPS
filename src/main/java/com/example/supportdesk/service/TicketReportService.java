@@ -31,4 +31,18 @@ public class TicketReportService {
 
         return results.getMappedResults();
     }
+
+    public List<ReportCountResponse> getTicketsCountByPriority(){
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.group("priority").count().as("count")
+        );
+
+        AggregationResults<ReportCountResponse> results = mongoTemplate.aggregate(
+            aggregation,
+            Ticket.class,
+            ReportCountResponse.class
+        );
+
+        return results.getMappedResults();
+    }
 }
