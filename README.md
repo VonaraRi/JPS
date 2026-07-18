@@ -20,20 +20,20 @@
 * **Clear Contract & Reduced Errors:** It acts as a single source of truth (a contract) between systems, preventing integration bugs, mismatched property names, or incorrect data type assumptions.
 * **Easier Mocking:** Frontend developers can easily build mock servers or dummy data structures using the documented schema, allowing them to test user interfaces completely independent of the real database.
 
-- [ ] Project runs successfully
-- [ ] MongoDB connection works
-- [ ] Ticket model uses @Document and @Id
-- [ ] TicketRepository extends MongoRepository
-- [ ] Basic CRUD endpoints work
-- [ ] Filtering works
-- [ ] Pagination works
-- [ ] Sorting works
-- [ ] Duplicate or validation errors return clear responses
-- [ ] Register endpoint works
-- [ ] Login endpoint returns JWT
-- [ ] Protected endpoints reject missing token
-- [ ] Protected endpoints accept valid token
-- [ ] Versioned /api/v1 routes exist
-- [ ] Report endpoint works
-- [ ] API documentation endpoint exists
-- [ ] .http file contains test evidence
+- [x] Project runs successfully
+- [x] MongoDB connection works
+- [x] Ticket model uses @Document and @Id
+- [x] TicketRepository extends MongoRepository
+- [x] Basic CRUD endpoints work
+- [x] Filtering works
+- [x] Pagination works
+- [x] Sorting works
+- [x] Duplicate or validation errors return clear responses
+- [x] Register endpoint works
+- [x] Login endpoint returns JWT
+- [x] Protected endpoints reject missing token
+- [x] Protected endpoints accept valid token
+- [x] Versioned /api/v1 routes exist
+- [x] Report endpoint works
+- [x] API documentation endpoint exists
+- [x] .http file contains test evidence
