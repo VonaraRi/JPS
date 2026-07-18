@@ -1,104 +1,34 @@
-@userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGV4Iiwic3ViIjoiYWxleEBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDI3Njk3MywiZXhwIjoxNzg0MzYzMzczfQ.M-TQ6xj9pkUluOC-JnMpq7Iw66uehoVnjsU_4CdQHMo
-@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiUmlvIEFkbWluIiwic3ViIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3ODQyNzgxMzIsImV4cCI6MTc4NDM2NDUzMn0.8tkenp4uZ_siO-hT9WXUt0-u2VxKQfpMdal8jRIZhvo
+@userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGljZSIsInN1YiI6ImFsaWNlQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg0MzQzMDIyLCJleHAiOjE3ODQ0Mjk0MjJ9.JPhXvYuJ0hvJebL45KuInEukpNLGsSS8J_vXo8AHhdE
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDM0MzA2MiwiZXhwIjoxNzg0NDI5NDYyfQ.-ZSzBgXvN_3xOE8scNB0k48HMahecMQxuIFkgl_vhno
 
 ### ==========================================
-### AUTHENTICATION & REGISTRATION ENDPOINTS (PUBLIC)
+### API V1 VERSIONED ROUTE TESTS
 ### ==========================================
 
-### A1. Register a USER Account
-POST http://localhost:8082/api/auth/register
+### 1. Test Versioned Route Without Token (Should return 401 Unauthorized)
+GET http://localhost:8082/api/v1/tickets
+Content-Type: application/json
+
+
+### 2. Test Versioned Route With Valid Token (Should return 200 OK)
+GET http://localhost:8082/api/v1/tickets
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+
+### 3. Test Creating a Ticket on Versioned Route (Should return 201 Created for USER)
+POST http://localhost:8082/api/v1/tickets
+Authorization: Bearer {{userToken}}
 Content-Type: application/json
 
 {
-  "name": "Alex User",
-  "email": "alex@example.com",
-  "password": "mySecurePassword123",
-  "role": "USER"
-}
-
-### A2. Register an ADMIN Account
-POST http://localhost:8082/api/auth/register
-Content-Type: application/json
-
-{
-  "name": "Rio Admin",
-  "email": "admin@example.com",
-  "password": "adminPassword123",
-  "role": "ADMIN"
-}
-
-### A3. Login as USER (Get your USER token here)
-POST http://localhost:8082/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "alex@example.com",
-  "password": "mySecurePassword123"
-}
-
-### A4. Login as ADMIN (Get your ADMIN token here)
-POST http://localhost:8082/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@example.com",
-  "password": "adminPassword123"
+  "title": "Cannot access server",
+  "description": "Getting timeout errors while attempting connection",
+  "status": "OPEN"
 }
 
 
-### Test Register (Without role)
-POST http://localhost:8082/api/auth/register
-Content-Type: application/json
-
-{
-  "name": "Alex User",
-  "email": "alex_test@example.com",
-  "password": "mySecurePassword123"
-}
-
-### ==========================================
-### TICKET API SECURITY TESTS
-### ==========================================
-
-### 1. GET /api/health (Should be Public -> 200 OK)
-GET http://localhost:8082/api/health
-
-
-### 2. GET /api/tickets WITHOUT Token (Should return 401 Unauthorized)
-GET http://localhost:8082/api/tickets
-
-
-### 3. GET /api/tickets WITH USER Token (Should return 200 OK)
+### 4. Test Legacy Route Compatibility (Should still work with a token)
 GET http://localhost:8082/api/tickets
 Authorization: Bearer {{userToken}}
-
-
-### 4. GET /api/tickets/{id} WITH USER Token (Should return 200 OK)
-GET http://localhost:8082/api/tickets/6a51ed2b837a33b12a8318fe
-Authorization: Bearer {{userToken}}
-
-
-### 5. POST /api/tickets WITH USER Token (Should return 403 Forbidden)
-POST http://localhost:8082/api/tickets
 Content-Type: application/json
-Authorization: Bearer {{userToken}}
-
-{
-  "title": "Broken Screen",
-  "description": "The monitor in lab 3 is flashing green."
-}
-
-
-### 6. POST /api/tickets WITH ADMIN Token (Should return 201 Created)
-POST http://localhost:8082/api/tickets
-Content-Type: application/json
-Authorization: Bearer {{adminToken}}
-
-{
-  "title": "Server Outage",
-  "description": "Production database is not responding to connections.",
-  "category": "Database",
-  "priority": "Critical",
-  "status": "Open",
-  "createdBy": "Alex Admin"
-}

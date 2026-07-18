@@ -6,8 +6,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // <-- Add this import
-import org.springframework.security.crypto.password.PasswordEncoder;     // <-- Add this import
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,7 +21,6 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
-    // 1. Define the PasswordEncoder bean here so both Spring Security and your Seeder can use it
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -42,6 +41,20 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
 
+                // ==========================================
+                // NEW: API V1 Versioned Routes Security Rules
+                // ==========================================
+                // GET /api/v1/tickets and /api/v1/tickets/{id} require USER or ADMIN
+                .requestMatchers(HttpMethod.GET, "/api/v1/tickets", "/api/v1/tickets/*")
+                    .hasAnyRole("USER", "ADMIN")
+                
+                // POST /api/v1/tickets requires USER or ADMIN (per exercise instructions)
+                .requestMatchers(HttpMethod.POST, "/api/v1/tickets")
+                    .hasAnyRole("USER", "ADMIN")
+
+                // ==========================================
+                // LEGACY: Old Routes Security Rules (Kept Intact)
+                // ==========================================
                 // Protected endpoints: GET tickets (Accessible by USER and ADMIN)
                 .requestMatchers(HttpMethod.GET, "/api/tickets", "/api/tickets/*")
                     .hasAnyRole("USER", "ADMIN")
