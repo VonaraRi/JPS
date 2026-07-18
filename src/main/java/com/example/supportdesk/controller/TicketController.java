@@ -16,18 +16,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Set;
+import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
+// Updated path to include '/v1' http routes
+@RequestMapping(path = "/api/v1/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TicketController {
 
     private final TicketService ticketService;
+
+    // A whitelist set containing your database entity fields allowed for sorting
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "title", "status", "priority", "category", "createdAt", "assetTag");
 
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
     }
 
-    // Updated to accept optional query parameters: ?status=..., ?priority=..., ?category=...
     @GetMapping
     public List<TicketResponse> getAll(
             @RequestParam(required = false) String status,
@@ -44,14 +49,12 @@ public class TicketController {
 
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody CreateTicketRequest request) {
-        // 1. Safe Null Check: Check if fields are null first, THEN check if they are empty
         if (request.getTitle() == null || request.getTitle().trim().isEmpty() ||
             request.getDescription() == null || request.getDescription().trim().isEmpty() ||
             request.getCategory() == null || request.getCategory().trim().isEmpty() ||
             request.getPriority() == null || request.getPriority().trim().isEmpty() ||
             request.getCreatedBy() == null || request.getCreatedBy().trim().isEmpty()) {
             
-            // Returns a clean 400 Bad Request instead of breaking with a 500 Error
             return new ResponseEntity<>("Required fields cannot be empty", HttpStatus.BAD_REQUEST);
         }
         
@@ -60,13 +63,28 @@ public class TicketController {
     }
 
     @GetMapping("/paged")
-    public ResponseEntity<Page<TicketResponse>> getAllPaged(
+    public ResponseEntity<?> getAllPaged(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String direction) {
         
+        if (page < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Bad Request", "message", "Page index must not be less than zero"));
+        }
+
+        if (size <= 0 || size > 50) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Bad Request", "message", "Page size must be between 1 and 50"));
+        }
+
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Bad Request", "message", "Invalid sort field property: " + sortBy));
+        }
+        
         Page<TicketResponse> pagedTickets = ticketService.getAllTicketsPaged(page, size, sortBy, direction);
         return ResponseEntity.ok(pagedTickets);
-}
+    }
 }

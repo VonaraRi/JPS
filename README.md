@@ -19,3 +19,21 @@
 * **Parallel Development:** Frontend and backend teams can work at the same time. The frontend team doesn't have to wait for the backend to be fully completed because they already know the exact endpoints, request formats, and expected responses.
 * **Clear Contract & Reduced Errors:** It acts as a single source of truth (a contract) between systems, preventing integration bugs, mismatched property names, or incorrect data type assumptions.
 * **Easier Mocking:** Frontend developers can easily build mock servers or dummy data structures using the documented schema, allowing them to test user interfaces completely independent of the real database.
+
+- [ ] Project runs successfully
+- [ ] MongoDB connection works
+- [ ] Ticket model uses @Document and @Id
+- [ ] TicketRepository extends MongoRepository
+- [ ] Basic CRUD endpoints work
+- [ ] Filtering works
+- [ ] Pagination works
+- [ ] Sorting works
+- [ ] Duplicate or validation errors return clear responses
+- [ ] Register endpoint works
+- [ ] Login endpoint returns JWT
+- [ ] Protected endpoints reject missing token
+- [ ] Protected endpoints accept valid token
+- [ ] Versioned /api/v1 routes exist
+- [ ] Report endpoint works
+- [ ] API documentation endpoint exists
+- [ ] .http file contains test evidence

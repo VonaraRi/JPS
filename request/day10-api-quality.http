@@ -1,0 +1,71 @@
+### Day 10: API Quality, Versioning, Docs and Reports
+### Run the app first: mvn spring-boot:run
+
+
+### Public health check
+GET http://localhost:8082/api/health
+
+
+### Public API information
+GET http://localhost:8082/api/v1/info
+
+
+### Public API documentation endpoint
+GET http://localhost:8082/api/docs
+
+
+### Login as seeded admin
+POST http://localhost:8082/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "Admin@12345"
+}
+
+
+### Copy the token from the login response and paste it below
+@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDM2NTAxMSwiZXhwIjoxNzg0NDUxNDExfQ.-BedjMvfBTPoRkN0lcvVHsvj6lM7OqcseBBYmlKo_wg
+
+
+### Versioned endpoint: get all tickets
+GET http://localhost:8082/api/v1/tickets
+Authorization: Bearer {{token}}
+
+
+### Versioned endpoint: paged tickets
+GET http://localhost:8082/api/v1/tickets/paged?page=0&size=5&sortBy=assetTag&direction=asc
+Authorization: Bearer {{token}}
+
+
+### API quality: invalid page should return 400 Bad Request
+GET http://localhost:8082/api/v1/tickets/paged?page=-1&size=5&sortBy=assetTag&direction=asc
+Authorization: Bearer {{token}}
+
+
+### API quality: invalid size should return 400 Bad Request
+GET http://localhost:8082/api/v1/tickets/paged?page=0&size=100&sortBy=assetTag&direction=asc
+Authorization: Bearer {{token}}
+
+
+### API quality: invalid sort field should return 400 Bad Request
+GET http://localhost:8082/api/v1/tickets/paged?page=0&size=5&sortBy=password&direction=asc
+Authorization: Bearer {{token}}
+
+
+### Report: tickets grouped by status
+GET http://localhost:8082/api/v1/reports/tickets-by-status
+Authorization: Bearer {{token}}
+
+### Report: tickets grouped by priority
+GET http://localhost:8082/api/v1/reports/tickets-by-priority
+Authorization: Bearer {{token}}
+
+### Report: tickets grouped by category (not implemented yet)
+GET http://localhost:8082/api/v1/reports/tickets-by-category
+Authorization: Bearer {{token}}
+
+
+### Report: tickets grouped by location (not implemented yet)
+GET http://localhost:8082/api/v1/reports/tickets-by-location
+Authorization: Bearer {{token}}

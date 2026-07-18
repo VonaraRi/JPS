@@ -37,12 +37,15 @@ public class SecurityConfig {
                 .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
                 .requestMatchers("/error").permitAll()
 
-                // Public endpoints
-                .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
+                // ==========================================
+                //  Public endpoints
+                // ==========================================
+                // Added /api/v1/info to the public GET rules here
+                .requestMatchers(HttpMethod.GET, "/api/health", "/api/v1/info").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
                 
                 // ==========================================
-                // NEW: API Documentation Security Rules
+                // API Documentation Security Rules
                 // ==========================================
                 // Allows completely public access to the /api/docs routes
                 .requestMatchers("/api/docs", "/api/docs/**").permitAll()
