@@ -40,6 +40,12 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
+                
+                // ==========================================
+                // NEW: API Documentation Security Rules
+                // ==========================================
+                // Allows completely public access to the /api/docs routes
+                .requestMatchers("/api/docs", "/api/docs/**").permitAll()
 
                 // ==========================================
                 // API V1 Reports Routes Security Rules

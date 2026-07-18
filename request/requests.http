@@ -1,5 +1,6 @@
-@userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGljZSIsInN1YiI6ImFsaWNlQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg0MzU2MTI2LCJleHAiOjE3ODQ0NDI1MjZ9.ICvcB0k7wD5ARZGthehnhsuppSZA8VvgUlZXHV5ImTM
-@adminToken = eeyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDM1NjE1MiwiZXhwIjoxNzg0NDQyNTUyfQ.DWMR8zwEqvrnAvWMR7Ittw738w2PGvXReuPT4oZWFRQ
+@userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGljZSIsInN1YiI6ImFsaWNlQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg0MzU4ODk4LCJleHAiOjE3ODQ0NDUyOTh9._mfxLd5GYd0wQaSXYPqWrgPWdgpQ5aZQo2J9WO3sWIU
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDM1ODkyMCwiZXhwIjoxNzg0NDQ1MzIwfQ.UZD7qZOYbNZJ4DmuMWQd8bSvJOgdKUWaczrVml210eg
+
 ### ==========================================
 ### API V1 VERSIONED ROUTE TESTS
 ### ==========================================
@@ -46,3 +47,6 @@ Content-Type: application/json
 GET http://localhost:8082/api/v1/reports/tickets-by-priority
 Authorization: Bearer {{userToken}}
 Content-Type: application/json
+
+### 3. Fetch API Endpoint Documentation Catalog (Public Access)
+GET http://localhost:8082/api/docs
