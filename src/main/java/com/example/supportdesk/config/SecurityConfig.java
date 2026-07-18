@@ -42,13 +42,20 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
 
                 // ==========================================
-                // NEW: API V1 Versioned Routes Security Rules
+                // NEW: API V1 Reports Routes Security Rules
+                // ==========================================
+                // GET /api/v1/reports/tickets-by-status requires USER or ADMIN
+                .requestMatchers(HttpMethod.GET, "/api/v1/reports/tickets-by-status")
+                    .hasAnyRole("USER", "ADMIN")
+
+                // ==========================================
+                // API V1 Versioned Routes Security Rules
                 // ==========================================
                 // GET /api/v1/tickets and /api/v1/tickets/{id} require USER or ADMIN
                 .requestMatchers(HttpMethod.GET, "/api/v1/tickets", "/api/v1/tickets/*")
                     .hasAnyRole("USER", "ADMIN")
                 
-                // POST /api/v1/tickets requires USER or ADMIN (per exercise instructions)
+                // POST /api/v1/tickets requires USER or ADMIN
                 .requestMatchers(HttpMethod.POST, "/api/v1/tickets")
                     .hasAnyRole("USER", "ADMIN")
 

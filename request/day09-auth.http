@@ -1,5 +1,5 @@
-@userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGljZSIsInN1YiI6ImFsaWNlQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg0MzQzMDIyLCJleHAiOjE3ODQ0Mjk0MjJ9.JPhXvYuJ0hvJebL45KuInEukpNLGsSS8J_vXo8AHhdE
-@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDM0MzA2MiwiZXhwIjoxNzg0NDI5NDYyfQ.-ZSzBgXvN_3xOE8scNB0k48HMahecMQxuIFkgl_vhno
+@userToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGljZSIsInN1YiI6ImFsaWNlQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg0MzQ4Njk3LCJleHAiOjE3ODQ0MzUwOTd9.DBVD_NV4qZ9lHVOt16V4fZ-E9G0wEpyxfQzJMTnVzgs
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDM0ODcyNCwiZXhwIjoxNzg0NDM1MTI0fQ.0YjtjVhswyPCOfEunW3ICNo1WI-AFUuDcyzZdbmanqU
 
 ### ==========================================
 ### SUPPORT DESK TICKET API SECURITY TESTS
