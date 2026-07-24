@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Layout from './components/Layout.jsx';
+import ApiInfoBanner from './components/ApiInfoBanner.jsx';
 import TicketFilterPanel from './components/TicketFilterPanel.jsx';
 import TicketList from './components/TicketList.jsx';
 import TicketDetail from './components/TicketDetail.jsx';
@@ -11,19 +12,15 @@ export default function App() {
   const [priorityFilter, setPriorityFilter] = useState('ALL');
   const [selectedTicket, setSelectedTicket] = useState(sampleTickets[0]);
 
-  // Filtering Logic
   const filteredTickets = sampleTickets.filter((ticket) => {
-    // 1. Search by Title or Category (or ID)
     const matchesSearch =
       ticket.title.toLowerCase().includes(searchText.toLowerCase()) ||
       ticket.category.toLowerCase().includes(searchText.toLowerCase()) ||
       ticket.id.toLowerCase().includes(searchText.toLowerCase());
 
-    // 2. Filter by Status
     const matchesStatus =
       statusFilter === 'ALL' || ticket.status === statusFilter;
 
-    // 3. Filter by Priority
     const matchesPriority =
       priorityFilter === 'ALL' || ticket.priority === priorityFilter;
 
@@ -32,6 +29,8 @@ export default function App() {
 
   return (
     <Layout>
+      <ApiInfoBanner />
+
       <TicketFilterPanel
         searchText={searchText}
         statusFilter={statusFilter}

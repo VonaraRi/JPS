@@ -25,7 +25,7 @@ Content-Type: application/json
 
 
 ### Copy the token from the login response and paste it below
-@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDM2NTAxMSwiZXhwIjoxNzg0NDUxNDExfQ.-BedjMvfBTPoRkN0lcvVHsvj6lM7OqcseBBYmlKo_wg
+@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NDg4MDUzOSwiZXhwIjoxNzg0OTY2OTM5fQ.t9WL8DuRB3F4F9YiI_EdPxA0J4nvb3j-lNWp4y1zwN4
 
 
 ### Versioned endpoint: get all tickets
