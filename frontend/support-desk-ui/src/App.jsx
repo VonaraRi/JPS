@@ -1,52 +1,20 @@
-import { useState } from 'react';
-import Layout from './components/Layout.jsx';
-import ApiInfoBanner from './components/ApiInfoBanner.jsx';
-import TicketFilterPanel from './components/TicketFilterPanel.jsx';
-import TicketList from './components/TicketList.jsx';
-import TicketDetail from './components/TicketDetail.jsx';
-import sampleTickets from './data/sampleTickets.js';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import AppShell from './components/AppShell.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import DashboardPage from './pages/DashboardPage.jsx';
+import TicketsPage from './pages/TicketsPage.jsx';
 
 export default function App() {
-  const [searchText, setSearchText] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [priorityFilter, setPriorityFilter] = useState('ALL');
-  const [selectedTicket, setSelectedTicket] = useState(sampleTickets[0]);
-
-  const filteredTickets = sampleTickets.filter((ticket) => {
-    const matchesSearch =
-      ticket.title.toLowerCase().includes(searchText.toLowerCase()) ||
-      ticket.category.toLowerCase().includes(searchText.toLowerCase()) ||
-      ticket.id.toLowerCase().includes(searchText.toLowerCase());
-
-    const matchesStatus =
-      statusFilter === 'ALL' || ticket.status === statusFilter;
-
-    const matchesPriority =
-      priorityFilter === 'ALL' || ticket.priority === priorityFilter;
-
-    return matchesSearch && matchesStatus && matchesPriority;
-  });
-
   return (
-    <Layout>
-      <ApiInfoBanner />
+    <Routes>
+      <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
+      <Route path="/login" element={<LoginPage />} />
 
-      <TicketFilterPanel
-        searchText={searchText}
-        statusFilter={statusFilter}
-        priorityFilter={priorityFilter}
-        onSearchChange={setSearchText}
-        onStatusChange={setStatusFilter}
-        onPriorityChange={setPriorityFilter}
-      />
-      <div className="dashboard-grid">
-        <TicketList
-          tickets={filteredTickets}
-          selectedTicketId={selectedTicket?.id}
-          onSelectTicket={setSelectedTicket}
-        />
-        <TicketDetail ticket={selectedTicket} />
-      </div>
-    </Layout>
+      <Route path="/app" element={<AppShell />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="tickets" element={<TicketsPage />} />
+      </Route>
+    </Routes>
   );
 }
