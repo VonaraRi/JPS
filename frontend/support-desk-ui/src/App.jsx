@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router';
 import AppShell from './components/AppShell.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import TicketsPage from './pages/TicketsPage.jsx';
@@ -12,7 +13,14 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
 
       {/* Parent route: /app */}
-      <Route path="/app" element={<AppShell />}>
+      <Route
+        path="/app"
+        element={
+          <ProtectedRoute>
+            <AppShell />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="tickets" element={<TicketsPage />} />

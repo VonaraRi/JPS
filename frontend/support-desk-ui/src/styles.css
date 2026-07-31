@@ -383,3 +383,84 @@ dd {
     display: grid;
   }
 }
+
+/* Login Page Wrapper */
+.login-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Card Container */
+.login-card {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border: 1px solid #fbcfe8;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 12px 35px rgba(131, 24, 67, 0.08);
+}
+
+.login-card h1 {
+  font-size: 1.8rem;
+  color: #831843;
+  margin-bottom: 8px;
+}
+
+.login-card p {
+  color: #9d174d;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Form Styles */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.login-form button {
+  background: #ec4899;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 8px;
+  transition: background 0.2s ease;
+}
+
+.login-form button:hover:not(:disabled) {
+  background: #db2777;
+}
+
+.login-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Seeded Helper Box */
+.login-help {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #fff5f7;
+  border: 1px dashed #fbcfe8;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 0.85rem;
+  color: #831843;
+}
+
+.login-help strong {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #ec4899;
+}
