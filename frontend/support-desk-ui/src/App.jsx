@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router';
-import Layout from './components/Layout.jsx';
+import AppShell from './components/AppShell.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import TicketsPage from './pages/TicketsPage.jsx';
+import ReportsPage from './pages/ReportsPage.jsx';
 
 export default function App() {
   return (
@@ -11,11 +12,11 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
 
       {/* Parent route: /app */}
-      <Route path="/app" element={<Layout />}>
+      <Route path="/app" element={<AppShell />}>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
-        {/* Relative path: 'tickets' resolves to /app/tickets */}
         <Route path="tickets" element={<TicketsPage />} />
+        <Route path="reports" element={<ReportsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/login" replace />} />
