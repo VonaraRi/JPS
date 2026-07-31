@@ -5,6 +5,7 @@ import com.example.supportdesk.exception.NotFoundException;
 import com.example.supportdesk.model.Ticket;
 import com.example.supportdesk.repository.TicketRepository;
 import com.example.supportdesk.dto.CreateTicketRequest;
+import com.example.supportdesk.dto.UpdateTicketRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -74,6 +75,25 @@ public class TicketService {
         
         log.info("Successfully created ticket in MongoDB. Assigned ID: {}", savedTicket.getId());
         return mapToResponse(savedTicket);
+    }
+
+    // NEW: Update Ticket Method
+    public TicketResponse updateTicket(String id, UpdateTicketRequest request) {
+        log.info("Attempting to update ticket with ID: {}", id);
+
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ticket not found: " + id));
+
+        ticket.setTitle(request.getTitle());
+        ticket.setDescription(request.getDescription());
+        ticket.setCategory(request.getCategory());
+        ticket.setPriority(request.getPriority());
+        ticket.setStatus(request.getStatus());
+
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        log.info("Successfully updated ticket with ID: {}", updatedTicket.getId());
+        return mapToResponse(updatedTicket);
     }
 
     // Updated with Logging for Pagination
