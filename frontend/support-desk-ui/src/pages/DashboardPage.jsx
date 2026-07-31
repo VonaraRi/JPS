@@ -1,8 +1,8 @@
 export default function DashboardPage() {
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Dashboard Page</h2>
-      <p>This is a dashboard page.</p>
+    <div className="card">
+      <h2>Dashboard</h2>
+      <p>Welcome to the Support Desk overview.</p>
     </div>
   );
 }
