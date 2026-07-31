@@ -5,7 +5,7 @@ import LoadingMessage from '../components/LoadingMessage.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function LoginPage() {
-  const { isAuthenticated, login } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState('admin@example.com');
   const [password, setPassword] = useState('Admin@12345');
   const [loading, setLoading] = useState(false);
@@ -14,10 +14,6 @@ export default function LoginPage() {
   const location = useLocation();
 
   const redirectTo = location.state?.from?.pathname || '/app/dashboard';
-
-  if (isAuthenticated) {
-    return <Navigate to="/app/dashboard" replace />;
-  }
 
   async function handleSubmit(event) {
     event.preventDefault();
