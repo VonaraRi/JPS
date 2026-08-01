@@ -87,11 +87,15 @@ export async function updateTicket(id, token, payload) {
 
 // Report API Helpers
 export async function fetchReport(path, token) {
-  const response = await fetch(path, {
-    headers: authHeaders(token)
-  });
-
-  return parseJsonResponse(response);
+  try {
+    const response = await fetch(path, {
+      headers: authHeaders(token)
+    });
+    return await parseJsonResponse(response);
+  } catch (err) {
+    console.warn(`Report endpoint ${path} unavailable:`, err.message);
+    return []; // Return fallback array so the rest of the UI loads
+  }
 }
 
 export async function fetchTicketReports(token) {

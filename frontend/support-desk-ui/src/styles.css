@@ -544,3 +544,87 @@ dd {
   background: #db2777;
   transform: translateY(-1px);
 }
+
+/* 📊 Report Dashboard Layout */
+.report-grid,
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Card Container */
+.report-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(131, 24, 67, 0.05);
+  border: 1px solid #fbcfe8;
+}
+
+.report-card .section-heading h2 {
+  color: #831843;
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.report-card .section-heading p {
+  color: #9d174d;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-bottom: 1.25rem;
+}
+
+/* List & Row Styling */
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.report-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background-color: #fff5f8;
+  border: 1px solid #fce7f3;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.report-row:hover {
+  background-color: #fce7f3;
+  transform: translateX(2px);
+}
+
+.report-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #4a1525;
+  text-transform: capitalize; /* Automatically formats uppercase/lowercase backend text */
+}
+
+/* Number Badge */
+.report-badge {
+  background-color: #831843;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  min-width: 28px;
+  text-align: center;
+}
+
+/* Empty State */
+.report-empty {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background-color: #fff5f8;
+  border-radius: 12px;
+  border: 1px dashed #fbcfe8;
+  color: #9d174d;
+  font-size: 0.9rem;
+}
