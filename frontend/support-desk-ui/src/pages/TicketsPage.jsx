@@ -6,20 +6,32 @@ import TicketDetail from '../components/TicketDetail.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import LoadingMessage from '../components/LoadingMessage.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useTicketData } from '../context/TicketDataContext.jsx';
 import { fetchTickets } from '../services/api.js';
 
 export default function TicketsPage() {
   const { token } = useAuth();
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
-  const [searchText, setSearchText] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  // 🟢 Consume state and actions from TicketDataContext
+  const {
+    tickets,
+    selectedTicketId,
+    loading,
+    error,
+    filters,
+    loadStart,
+    loadSuccess,
+    loadError,
+    setSearchText,
+    setStatusFilter,
+    selectTicket,
+    selectedTicket
+  } = useTicketData();
+
+  // Local state for priority filter (since it's UI specific)
   const [priorityFilter, setPriorityFilter] = useState('ALL');
-  const [selectedTicket, setSelectedTicket] = useState(null);
 
-  // Fetch real tickets from backend on load
+  // Fetch real tickets from backend on load using Context Actions
   useEffect(() => {
     let ignore = false;
 
@@ -27,24 +39,16 @@ export default function TicketsPage() {
       if (!token) return;
 
       try {
-        setLoading(true);
-        setError('');
+        loadStart();
         const data = await fetchTickets(token);
 
         if (!ignore) {
-          setTickets(data || []);
-          if (data && data.length > 0) {
-            setSelectedTicket(data[0]); // Select first real ticket by default
-          }
+          loadSuccess(data || []);
         }
       } catch (err) {
         if (!ignore) {
-          setError(err.message || 'Could not load tickets.');
+          loadError(err.message || 'Could not load tickets.');
           console.error(err);
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
         }
       }
     }
@@ -54,18 +58,21 @@ export default function TicketsPage() {
     return () => {
       ignore = true;
     };
-  }, [token]);
+  }, [token, loadStart, loadSuccess, loadError]);
 
-  // Filter backend tickets
-  const filteredTickets = tickets.filter((ticket) => {
+  // Derive filtered tickets list using Context filters + Priority filter
+  const filteredTickets = (tickets || []).filter((ticket) => {
     const ticketIdStr = String(ticket.id || ticket._id || '');
+    const searchText = filters.searchText || '';
+    const statusFilter = filters.statusFilter || filters.status || 'ALL';
+
     const matchesSearch =
       (ticket.title || '').toLowerCase().includes(searchText.toLowerCase()) ||
       (ticket.category || '').toLowerCase().includes(searchText.toLowerCase()) ||
       ticketIdStr.toLowerCase().includes(searchText.toLowerCase());
 
     const matchesStatus =
-      statusFilter === 'ALL' || ticket.status === statusFilter;
+      statusFilter === 'ALL' || statusFilter === '' || ticket.status === statusFilter;
 
     const matchesPriority =
       priorityFilter === 'ALL' || ticket.priority === priorityFilter;
@@ -73,7 +80,14 @@ export default function TicketsPage() {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  const selectedTicketDbId = selectedTicket?._id || selectedTicket?.id;
+  // Determine current active ticket details
+  const activeTicketDetail =
+    selectedTicket ||
+    filteredTickets.find(
+      (t) => (t.id || t._id) === selectedTicketId
+    ) ||
+    filteredTickets[0] ||
+    null;
 
   return (
     <>
@@ -84,7 +98,7 @@ export default function TicketsPage() {
         style={{
           marginBottom: '1rem',
           display: 'flex',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           alignItems: 'center'
         }}
       >
@@ -95,8 +109,8 @@ export default function TicketsPage() {
       </section>
 
       <TicketFilterPanel
-        searchText={searchText}
-        statusFilter={statusFilter}
+        searchText={filters.searchText || ''}
+        statusFilter={filters.statusFilter || filters.status || 'ALL'}
         priorityFilter={priorityFilter}
         onSearchChange={setSearchText}
         onStatusChange={setStatusFilter}
@@ -110,12 +124,12 @@ export default function TicketsPage() {
         <div className="dashboard-grid">
           <TicketList
             tickets={filteredTickets}
-            selectedTicketId={selectedTicketDbId}
-            onSelectTicket={setSelectedTicket}
+            selectedTicketId={selectedTicketId}
+            onSelectTicket={(ticket) => selectTicket(ticket._id || ticket.id)}
           />
 
           <div>
-            <TicketDetail ticket={selectedTicket} />
+            <TicketDetail ticket={activeTicketDetail} />
           </div>
         </div>
       )}

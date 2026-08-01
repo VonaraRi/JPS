@@ -1,3 +1,4 @@
+// src/pages/ReportsPage.js
 import { useEffect, useState } from 'react';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import LoadingMessage from '../components/LoadingMessage.jsx';
@@ -15,7 +16,11 @@ export default function ReportsPage() {
     let ignore = false;
 
     async function loadReports() {
-      if (!token) return;
+      // Prevent request if token is missing or loading from storage
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
@@ -50,6 +55,10 @@ export default function ReportsPage() {
 
   if (error) {
     return <ErrorMessage message={error} />;
+  }
+
+  if (!token) {
+    return <ErrorMessage message="Please log in to view reports." />;
   }
 
   if (!reports) {
