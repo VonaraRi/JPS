@@ -464,3 +464,83 @@ dd {
   letter-spacing: 0.05em;
   color: #ec4899;
 }
+
+/* Add/update this in your CSS */
+.step-indicator {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none; /* Removes default "1.", "2.", "3." list numbers */
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.step-indicator li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #702543;
+  opacity: 0.6;
+}
+
+.step-indicator li.active {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.step-indicator li span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #f3e5eb;
+  color: #702543;
+  font-size: 0.875rem;
+}
+
+.step-indicator li.active span {
+  background-color: #b81d62;
+  color: #ffffff;
+}
+
+/* 🟢 Reusable Button Link Styles */
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+/* Secondary Button Pill (Soft Pink Accent) */
+.button-link.secondary {
+  background: #fce7f3;
+  color: #831843;
+  border-color: #fbcfe8;
+}
+
+.button-link.secondary:hover {
+  background: #ec4899;
+  color: white;
+  border-color: #ec4899;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
+}
+
+/* Primary Button Pill (Solid Pink) */
+.button-link.primary {
+  background: #ec4899;
+  color: white;
+}
+
+.button-link.primary:hover {
+  background: #db2777;
+  transform: translateY(-1px);
+}

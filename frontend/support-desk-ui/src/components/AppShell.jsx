@@ -14,7 +14,7 @@ export default function AppShell() {
     <div className="app-shell">
       <header className="app-header">
         <div>
-          <p className="eyebrow">Day 12 Routing & Protected Views</p>
+          <p className="eyebrow">DAY 13 FORMS & VALIDATION</p>
           <h1>Support Desk UI</h1>
           <p className="header-subtitle">
             Manage your support tickets, user queries, and system reports.
@@ -31,7 +31,8 @@ export default function AppShell() {
 
       <nav className="app-nav" aria-label="Main navigation">
         <NavLink to="/app/dashboard">Dashboard</NavLink>
-        <NavLink to="/app/tickets">Tickets</NavLink>
+        <NavLink to="/app/tickets" end>Tickets</NavLink>
+        <NavLink to="/app/tickets/new">Ticket Form</NavLink>
         <NavLink to="/app/reports">Reports</NavLink>
       </nav>
 

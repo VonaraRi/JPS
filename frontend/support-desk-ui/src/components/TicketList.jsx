@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import StatusBadge from './StatusBadge.jsx';
 import PriorityBadge from './PriorityBadge.jsx';
 
@@ -17,24 +18,52 @@ export default function TicketList({ tickets, selectedTicketId, onSelectTicket }
         <p>Select a ticket to view details.</p>
       </div>
 
-      <div className="ticket-list">
-        {tickets.map((ticket) => (
-          <button
-            key={ticket.id}
-            className={ticket.id === selectedTicketId ? 'ticket-row selected' : 'ticket-row'}
-            onClick={() => onSelectTicket(ticket)}
-            type="button"
-          >
-            <div>
-              <strong>{ticket.id}</strong>
-              <span>{ticket.title}</span>
+      <div className="asset-list">
+        {tickets.map((ticket) => {
+          const ticketDbId = ticket._id || ticket.id;
+          const isSelected = ticketDbId === selectedTicketId;
+
+          return (
+            <div
+              key={ticketDbId}
+              className={isSelected ? 'asset-row selected' : 'asset-row'}
+            >
+              <button
+                className="ticket-info-button"
+                onClick={() => onSelectTicket(ticket)}
+                type="button"
+                style={{
+                  flex: 1,
+                  textAlign: 'left',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <div>
+                  <strong style={{ fontSize: '0.85rem', color: '#831843' }}>
+                    {ticket.id || ticket._id}
+                  </strong>
+                  <span style={{ marginLeft: '0.75rem', fontWeight: 600, color: '#4a1525' }}>
+                    {ticket.title}
+                  </span>
+                </div>
+              </button>
+
+              <div className="badge-group" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <PriorityBadge priority={ticket.priority} />
+                <StatusBadge status={ticket.status} />
+
+                <Link
+                  to={`/app/tickets/${ticketDbId}/edit`}
+                  className="button-link secondary"
+                >
+                  Edit
+                </Link>
+              </div>
             </div>
-            <div className="badge-group">
-              <PriorityBadge priority={ticket.priority} />
-              <StatusBadge status={ticket.status} />
-            </div>
-          </button>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
