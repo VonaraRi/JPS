@@ -1,3 +1,4 @@
+// Core HTTP Client Utility
 export async function apiRequest(path, options = {}) {
   const {
     method = 'GET',
@@ -8,12 +9,10 @@ export async function apiRequest(path, options = {}) {
 
   const requestHeaders = { ...headers };
 
-  // Attach JWT Bearer token if provided
   if (token) {
     requestHeaders.Authorization = `Bearer ${token}`;
   }
 
-  // Set JSON content-type if sending a payload
   if (body !== undefined) {
     requestHeaders['Content-Type'] = 'application/json';
   }
@@ -24,27 +23,19 @@ export async function apiRequest(path, options = {}) {
     body: body !== undefined ? JSON.stringify(body) : undefined
   });
 
-  // Safely parse response body (prevents JSON parse errors on empty 204 responses)
   const contentType = response.headers.get('content-type') ?? '';
-  let data = null;
+  const data = contentType.includes('application/json') ? await response.json() : null;
 
-  if (contentType.includes('application/json')) {
-    const text = await response.text();
-    data = text ? JSON.parse(text) : null;
-  }
-
-  // Handle HTTP error statuses
   if (!response.ok) {
-    const message = data?.message || data?.error || `Request failed with status ${response.status}`;
+    const message = data?.message || `Request failed with status ${response.status}`;
     throw new Error(message);
   }
 
   return data;
 }
 
+// URL Query String Helper
 export function buildQueryString(params = {}) {
-  if (!params) return '';
-
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
@@ -55,4 +46,27 @@ export function buildQueryString(params = {}) {
 
   const queryString = searchParams.toString();
   return queryString ? `?${queryString}` : '';
+}
+
+// Ticket API Service Methods
+
+// Fetch paginated support tickets
+
+export async function fetchPagedTickets(token, params = {}) {
+  const queryString = buildQueryString(params);
+  return apiRequest(`/api/v1/tickets/paged${queryString}`, {
+    method: 'GET',
+    token
+  });
+}
+
+/**
+ * Update ticket details or status
+ */
+export async function updateTicket(ticketId, token, ticketPayload) {
+  return apiRequest(`/api/v1/tickets/${ticketId}`, {
+    method: 'PUT',
+    token,
+    body: ticketPayload
+  });
 }

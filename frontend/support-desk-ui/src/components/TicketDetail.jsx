@@ -10,12 +10,16 @@ export default function TicketDetail({ ticket }) {
     );
   }
 
+  // Handle both MongoDB (_id) and standard SQL (id) keys
+  const rawId = String(ticket.id || ticket._id || '');
+  const shortId = rawId.length > 4 ? rawId.slice(-4) : rawId;
+
   return (
     <section className="card detail-card">
       <div className="section-heading row-heading">
         <div>
           <h2>{ticket.title}</h2>
-          <p>{ticket.id}</p>
+          <p className="ticket-id-subtitle">#{shortId}</p>
         </div>
         <div className="badge-group">
           <PriorityBadge priority={ticket.priority} />
@@ -26,7 +30,7 @@ export default function TicketDetail({ ticket }) {
       <dl className="detail-list">
         <div>
           <dt>ID</dt>
-          <dd>{ticket.id}</dd>
+          <dd className="monospace">{rawId}</dd>
         </div>
         <div>
           <dt>Title</dt>
@@ -34,7 +38,7 @@ export default function TicketDetail({ ticket }) {
         </div>
         <div>
           <dt>Category</dt>
-          <dd>{ticket.category}</dd>
+          <dd>{ticket.category || 'N/A'}</dd>
         </div>
         <div>
           <dt>Priority</dt>
@@ -46,11 +50,11 @@ export default function TicketDetail({ ticket }) {
         </div>
         <div>
           <dt>Created By</dt>
-          <dd>{ticket.createdBy}</dd>
+          <dd>{ticket.createdBy || 'Unknown'}</dd>
         </div>
         <div>
           <dt>Created At</dt>
-          <dd>{ticket.createdAt}</dd>
+          <dd>{ticket.createdAt || 'N/A'}</dd>
         </div>
       </dl>
     </section>

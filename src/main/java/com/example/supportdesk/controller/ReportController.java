@@ -26,6 +26,11 @@ public class ReportController {
         return ResponseEntity.ok(ticketReportService.getTicketsCountByStatus());
     }
 
+    @GetMapping("/tickets-by-category")
+    public ResponseEntity<List<ReportCountResponse>> getTicketsByCategory() {
+        return ResponseEntity.ok(ticketReportService.getTicketsCountByCategory());
+    }
+    
     @GetMapping("/tickets-by-priority")
     public ResponseEntity<List<ReportCountResponse>> getTicketsByPriority() {
         return ResponseEntity.ok(ticketReportService.getTicketsCountByPriority());

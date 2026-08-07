@@ -1,4 +1,4 @@
-import { apiRequest } from './httpClient.js';
+import { apiRequest, buildQueryString } from './httpClient.js';
 
 // Public API Info & Docs
 export function fetchApiInfo() {
@@ -7,6 +7,19 @@ export function fetchApiInfo() {
 
 export function fetchApiDocs() {
   return apiRequest('/api/docs');
+}
+
+// Add Paged Ticket Endpoint (Fixed URL queryString concatenation)
+export function fetchPagedTickets(token, params = {}) {
+  let queryString = buildQueryString(params);
+
+  // Safely strip leading '?' if buildQueryString already prepends it
+  if (queryString && queryString.startsWith('?')) {
+    queryString = queryString.slice(1);
+  }
+
+  const path = `/api/v1/tickets/paged${queryString ? `?${queryString}` : ''}`;
+  return apiRequest(path, { token });
 }
 
 // Authentication API

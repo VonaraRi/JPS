@@ -1,35 +1,65 @@
 import { createContext, useCallback, useContext, useMemo, useReducer } from 'react';
-import { fetchTickets, updateTicket } from '../services/api.js';
+import { fetchPagedTickets, updateTicket } from '../services/api.js';
 import { useAuth } from './AuthContext.jsx';
 
 const TicketDataContext = createContext(null);
 
 const initialState = {
-  tickets: [],
+  items: [],
   selectedTicketId: '',
   loading: false,
   error: '',
+  cacheMessage: 'No cached page loaded yet.',
   updatingId: '',
   cache: {},
   pageInfo: {
-    page: 1,
-    size: 10,
+    page: 0,
+    size: 5,
     sortBy: 'createdAt',
     direction: 'desc',
-    totalPages: 1,
+    totalPages: 0,
     totalElements: 0
   },
   filters: {
     searchText: '',
-    status: ''
+    statusFilter: 'ALL'
   }
 };
 
+function makeCacheKey(params) {
+  return `${params.page}|${params.size}|${params.sortBy}|${params.direction}`;
+}
+
 function replaceTicket(items, updatedTicket) {
-  if (!Array.isArray(items)) return [];
-  return items.map((ticket) => 
-    (ticket.id === updatedTicket.id || ticket._id === updatedTicket._id) ? updatedTicket : ticket
-  );
+  const updatedId = updatedTicket.id || updatedTicket._id;
+  return items.map((ticket) => {
+    const currentId = ticket.id || ticket._id;
+    return currentId === updatedId ? updatedTicket : ticket;
+  });
+}
+
+function replaceTicketInCache(cache, updatedTicket) {
+  const nextCache = {};
+
+  Object.entries(cache).forEach(([key, pageData]) => {
+    nextCache[key] = {
+      ...pageData,
+      content: replaceTicket(pageData.content ?? [], updatedTicket)
+    };
+  });
+
+  return nextCache;
+}
+
+function toPageInfo(data, fallback) {
+  return {
+    page: data.number ?? fallback.page,
+    size: data.size ?? fallback.size,
+    sortBy: fallback.sortBy,
+    direction: fallback.direction,
+    totalPages: data.totalPages ?? 0,
+    totalElements: data.totalElements ?? 0
+  };
 }
 
 function ticketReducer(state, action) {
@@ -38,29 +68,31 @@ function ticketReducer(state, action) {
       return {
         ...state,
         loading: true,
-        error: ''
+        error: '',
+        cacheMessage: action.fromCache ? 'Reading from cache...' : 'Fetching from backend...'
       };
 
     case 'LOAD_SUCCESS': {
-      // Handles both array direct response or paginated objects ({ content, pageInfo })
-      const rawTickets = Array.isArray(action.payload)
-        ? action.payload
-        : action.payload?.content ?? action.payload?.tickets ?? [];
-
-      const selectedStillVisible = rawTickets.some(
-        (t) => (t.id || t._id) === state.selectedTicketId
+      const items = action.data.content ?? [];
+      const selectedStillVisible = items.some(
+        (ticket) => (ticket.id || ticket._id) === state.selectedTicketId
       );
-      
-      const firstId = rawTickets[0]?.id || rawTickets[0]?._id || '';
-      const selectedTicketId = selectedStillVisible ? state.selectedTicketId : firstId;
+      const selectedTicketId = selectedStillVisible
+        ? state.selectedTicketId
+        : items[0]?.id || items[0]?._id || '';
+      const nextCache = action.fromCache
+        ? state.cache
+        : { ...state.cache, [action.cacheKey]: action.data };
 
       return {
         ...state,
+        items,
+        selectedTicketId,
         loading: false,
         error: '',
-        tickets: rawTickets,
-        selectedTicketId,
-        pageInfo: action.payload?.pageInfo ?? state.pageInfo
+        pageInfo: toPageInfo(action.data, action.params),
+        cache: nextCache,
+        cacheMessage: action.fromCache ? 'Loaded from cache.' : 'Fetched from backend and cached.'
       };
     }
 
@@ -68,47 +100,53 @@ function ticketReducer(state, action) {
       return {
         ...state,
         loading: false,
-        error: action.payload || action.message || 'Could not load tickets.'
+        error: action.message,
+        cacheMessage: 'Could not load data.'
       };
 
     case 'SET_SEARCH_TEXT':
       return {
         ...state,
-        filters: { ...state.filters, searchText: action.payload ?? action.value ?? '' }
+        filters: { ...state.filters, searchText: action.value }
       };
 
     case 'SET_STATUS_FILTER':
       return {
         ...state,
-        filters: { ...state.filters, status: action.payload ?? action.value ?? '' }
+        filters: { ...state.filters, statusFilter: action.value }
       };
 
     case 'SELECT_TICKET':
       return {
         ...state,
-        selectedTicketId: action.payload ?? action.ticketId ?? ''
+        selectedTicketId: action.ticketId
       };
 
     case 'OPTIMISTIC_UPDATE':
       return {
         ...state,
         updatingId: action.ticket.id || action.ticket._id,
-        tickets: replaceTicket(state.tickets, action.ticket)
+        items: replaceTicket(state.items, action.ticket),
+        cache: replaceTicketInCache(state.cache, action.ticket)
       };
 
     case 'UPDATE_SUCCESS':
       return {
         ...state,
         updatingId: '',
-        tickets: replaceTicket(state.tickets, action.ticket)
+        items: replaceTicket(state.items, action.ticket),
+        cache: replaceTicketInCache(state.cache, action.ticket),
+        cacheMessage: 'Optimistic update confirmed by backend.'
       };
 
     case 'ROLLBACK_UPDATE':
       return {
         ...state,
         updatingId: '',
-        tickets: replaceTicket(state.tickets, action.ticket),
-        error: action.message || 'Optimistic update failed and was rolled back.'
+        items: replaceTicket(state.items, action.ticket),
+        cache: replaceTicketInCache(state.cache, action.ticket),
+        error: action.message,
+        cacheMessage: 'Optimistic update rolled back.'
       };
 
     default:
@@ -116,116 +154,152 @@ function ticketReducer(state, action) {
   }
 }
 
+function toUpdatePayload(ticket) {
+  return {
+    title: ticket.title,
+    description: ticket.description,
+    category: ticket.category,
+    priority: ticket.priority,
+    status: ticket.status
+  };
+}
+
 export function TicketDataProvider({ children }) {
   const { token } = useAuth();
   const [state, dispatch] = useReducer(ticketReducer, initialState);
 
-  const loadStart = useCallback(() => {
-    dispatch({ type: 'LOAD_START' });
-  }, []);
+  const loadTicketsPage = useCallback(
+    async (overrides = {}) => {
+      const params = {
+        page: overrides.page ?? state.pageInfo.page,
+        size: overrides.size ?? state.pageInfo.size,
+        sortBy: overrides.sortBy ?? state.pageInfo.sortBy,
+        direction: overrides.direction ?? state.pageInfo.direction
+      };
 
-  const loadSuccess = useCallback((data) => {
-    dispatch({ type: 'LOAD_SUCCESS', payload: data });
-  }, []);
+      const cacheKey = makeCacheKey(params);
+      const cachedPage = state.cache[cacheKey];
 
-  const loadError = useCallback((errorMessage) => {
-    dispatch({ type: 'LOAD_ERROR', payload: errorMessage });
-  }, []);
+      if (cachedPage && !overrides.force) {
+        dispatch({
+          type: 'LOAD_SUCCESS',
+          data: cachedPage,
+          params,
+          cacheKey,
+          fromCache: true
+        });
+        return;
+      }
+
+      dispatch({ type: 'LOAD_START', fromCache: false });
+
+      try {
+        const data = await fetchPagedTickets(token, params);
+        dispatch({
+          type: 'LOAD_SUCCESS',
+          data,
+          params,
+          cacheKey,
+          fromCache: false
+        });
+      } catch (error) {
+        dispatch({
+          type: 'LOAD_ERROR',
+          message: error.message || 'Could not load paged tickets.'
+        });
+      }
+    },
+    [state.cache, state.pageInfo, token]
+  );
+
+  const refreshTickets = useCallback(() => {
+    return loadTicketsPage({ force: true });
+  }, [loadTicketsPage]);
 
   const setSearchText = useCallback((value) => {
-    dispatch({ type: 'SET_SEARCH_TEXT', payload: value });
+    dispatch({ type: 'SET_SEARCH_TEXT', value });
   }, []);
 
   const setStatusFilter = useCallback((value) => {
-    dispatch({ type: 'SET_STATUS_FILTER', payload: value });
+    dispatch({ type: 'SET_STATUS_FILTER', value });
   }, []);
 
   const selectTicket = useCallback((ticketId) => {
-    dispatch({ type: 'SELECT_TICKET', payload: ticketId });
+    dispatch({ type: 'SELECT_TICKET', ticketId });
   }, []);
 
-  // Fetch Tickets Action
-  const fetchTicketData = useCallback(async (customFilters = {}) => {
-    if (!token) return;
-    loadStart();
-    try {
-      const activeFilters = { ...state.filters, ...customFilters };
-      const data = await fetchTickets(token, activeFilters);
-      loadSuccess(data);
-    } catch (err) {
-      loadError(err.message || 'Failed to fetch tickets.');
-    }
-  }, [token, state.filters, loadStart, loadSuccess, loadError]);
+  const changeTicketStatus = useCallback(
+    async (ticketId, nextStatus) => {
+      const currentTicket = state.items.find((t) => (t.id || t._id) === ticketId);
 
-  // Optimistic Status Update
-  const changeTicketStatus = useCallback(async (ticketId, nextStatus) => {
-    const currentTicket = state.tickets.find((t) => (t.id || t._id) === ticketId);
-    if (!currentTicket || currentTicket.status === nextStatus) return;
+      if (!currentTicket || currentTicket.status === nextStatus) {
+        return;
+      }
 
-    const optimisticTicket = { ...currentTicket, status: nextStatus };
-    dispatch({ type: 'OPTIMISTIC_UPDATE', ticket: optimisticTicket });
+      const optimisticTicket = { ...currentTicket, status: nextStatus };
+      dispatch({ type: 'OPTIMISTIC_UPDATE', ticket: optimisticTicket });
 
-    try {
-      const savedTicket = await updateTicket(ticketId, token, { status: nextStatus });
-      dispatch({ type: 'UPDATE_SUCCESS', ticket: savedTicket });
-    } catch (err) {
-      dispatch({
-        type: 'ROLLBACK_UPDATE',
-        ticket: currentTicket,
-        message: err.message || 'Could not update ticket. Reverted change.'
-      });
-    }
-  }, [state.tickets, token]);
+      try {
+        const savedTicket = await updateTicket(ticketId, token, toUpdatePayload(optimisticTicket));
+        dispatch({ type: 'UPDATE_SUCCESS', ticket: savedTicket });
+      } catch (error) {
+        dispatch({
+          type: 'ROLLBACK_UPDATE',
+          ticket: currentTicket,
+          message: error.message || 'Could not update ticket status. Reverted local change.'
+        });
+      }
+    },
+    [state.items, token]
+  );
 
-  // Client-side Filtered List
+  // Client-side filtering logic over the loaded items page
   const visibleTickets = useMemo(() => {
-    if (!Array.isArray(state.tickets)) return [];
+    return state.items.filter((ticket) => {
+      const search = state.filters.searchText.toLowerCase();
+      const status = state.filters.statusFilter;
 
-    return state.tickets.filter((ticket) => {
-      const title = ticket.title || ticket.subject || '';
-      const matchesSearch = title.toLowerCase().includes(state.filters.searchText.toLowerCase());
-      
-      const filterStatus = state.filters.status;
-      const matchesStatus = !filterStatus || filterStatus === 'ALL' || ticket.status === filterStatus;
+      const matchesSearch =
+        !search ||
+        (ticket.title || '').toLowerCase().includes(search) ||
+        (ticket.category || '').toLowerCase().includes(search) ||
+        String(ticket.id || ticket._id || '').toLowerCase().includes(search);
+
+      const matchesStatus = status === 'ALL' || ticket.status === status;
 
       return matchesSearch && matchesStatus;
     });
-  }, [state.tickets, state.filters]);
+  }, [state.items, state.filters]);
 
   const selectedTicket = useMemo(() => {
-    return visibleTickets.find((t) => (t.id || t._id) === state.selectedTicketId) ?? visibleTickets[0] ?? null;
+    return (
+      visibleTickets.find((ticket) => (ticket.id || ticket._id) === state.selectedTicketId) ??
+      visibleTickets[0] ??
+      null
+    );
   }, [state.selectedTicketId, visibleTickets]);
 
   const value = useMemo(
     () => ({
-      // State
       ...state,
-      tickets: state.tickets,
       visibleTickets,
       selectedTicket,
-      
-      // Actions
-      dispatch,
-      loadStart,
-      loadSuccess,
-      loadError,
+      loadTicketsPage,
+      refreshTickets,
       setSearchText,
       setStatusFilter,
       selectTicket,
-      fetchTicketData,
       changeTicketStatus
     }),
     [
       state,
       visibleTickets,
       selectedTicket,
-      loadStart,
-      loadSuccess,
-      loadError,
+      loadTicketsPage,
+      refreshTickets,
       setSearchText,
       setStatusFilter,
       selectTicket,
-      fetchTicketData,
       changeTicketStatus
     ]
   );
@@ -235,8 +309,10 @@ export function TicketDataProvider({ children }) {
 
 export function useTicketData() {
   const value = useContext(TicketDataContext);
+
   if (!value) {
     throw new Error('useTicketData must be used inside TicketDataProvider');
   }
+
   return value;
 }
