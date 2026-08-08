@@ -4,6 +4,6 @@ import { cleanup } from '@testing-library/react';
 
 afterEach(() => {
   cleanup();
-  localStorage.clear();
+  window.localStorage?.clear(); // Safe optional chaining prevents the TypeError
   vi.restoreAllMocks();
 });
