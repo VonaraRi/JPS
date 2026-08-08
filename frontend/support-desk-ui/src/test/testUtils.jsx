@@ -46,7 +46,7 @@ export function renderWithRouter(ui, options = {}) {
 }
 
 export function storeAdminAuth() {
-  localStorage.setItem('supportDeskAuth', JSON.stringify({
+  const authData = JSON.stringify({
     token: 'test-admin-token',
     tokenType: 'Bearer',
     expiresInMinutes: 60,
@@ -56,7 +56,23 @@ export function storeAdminAuth() {
       email: 'admin@example.com',
       role: 'ADMIN'
     }
-  }));
+  });
+
+  // Polyfill window.localStorage in case JSDOM hasn't instantiated it yet
+  const storage = {
+    supportDeskAuth: authData
+  };
+
+  Object.defineProperty(window, 'localStorage', {
+    value: {
+      getItem: (key) => storage[key] || null,
+      setItem: (key, val) => { storage[key] = String(val); },
+      removeItem: (key) => { delete storage[key]; },
+      clear: () => { Object.keys(storage).forEach((k) => delete storage[k]); }
+    },
+    writable: true,
+    configurable: true
+  });
 }
 
 export function createJsonResponse(body, status = 200) {
