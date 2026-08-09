@@ -1,0 +1,7 @@
+### Note on Test Improvements & Hardening
+
+* **Added Invalid Enum/Option Coverage:** Included explicit test cases to verify that unsupported priority values (e.g., `'URGENT_NOT_ALLOWED'`) and status values (e.g., `'PENDING_APPROVAL'`) are correctly rejected by `validateTicketFormStep()`.
+* **Descriptive & Action-Oriented Test Names:** Replaced generic labels (e.g., `test 1`) with clear, scenario-based descriptions that explicitly explain what behavior is being tested under specific conditions.
+* **Behavioral vs. Implementation-Bound Assertions:** Swapped rigid object-length assertions (`expect(Object.keys(result).length).toBe(4)`) for targeted property checks (`expect(errors).toHaveProperty('title')`), preventing fragile failures if unrelated object keys are added later.
+* **Whitespace & Edge Case Hardening:** Added tests for whitespace-only inputs (`"   "`) across form fields to ensure `.trim()` validation works as expected, and verified safe fallback handling for empty string parameters (`formatTicketFormLabel('')`).
+* **Modular Organization:** Grouped test cases into distinct `describe` blocks corresponding to each utility function (`validateTicketFormStep`, `normalizeTicketFormPayload`, and `formatTicketFormLabel`) for cleaner test runner output and faster debugging.
