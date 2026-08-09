@@ -21,7 +21,6 @@ import java.time.Instant;
 @Service
 public class TicketService {
 
-    // Initialize the SLF4J logger instance
     private static final Logger log = LoggerFactory.getLogger(TicketService.class);
 
     private final TicketRepository ticketRepository;
@@ -30,7 +29,6 @@ public class TicketService {
         this.ticketRepository = ticketRepository;
     }
 
-    // Updated with Logging for Filters
     public List<TicketResponse> getAllTickets(String status, String priority, String category) {
         log.info("Fetching tickets with filters -> status: {}, priority: {}, category: {}", status, priority, category);
         
@@ -52,23 +50,21 @@ public class TicketService {
     }
 
     public TicketResponse getTicketById(String id) {
-        Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ticket not found: " + id));
+        Ticket ticket = findTicketOrThrow(id);
         return mapToResponse(ticket);
     }
 
-    // Updated with Logging for Ticket Creation
     public TicketResponse createTicket(CreateTicketRequest request) {
         log.info("Attempting to create a new ticket with title: '{}' by user: {}", request.getTitle(), request.getCreatedBy());
         
         Ticket ticket = new Ticket();
-        ticket.setTitle(request.getTitle());
-        ticket.setDescription(request.getDescription());
-        ticket.setCategory(request.getCategory());
-        ticket.setPriority(request.getPriority());
-        ticket.setCreatedBy(request.getCreatedBy());
+        ticket.setTitle(normalizeRequired(request.getTitle()));
+        ticket.setDescription(normalizeRequired(request.getDescription()));
+        ticket.setCategory(normalizeRequired(request.getCategory()));
+        ticket.setPriority(normalizePriority(request.getPriority()));
+        ticket.setCreatedBy(normalizeRequired(request.getCreatedBy()));
         
-        ticket.setStatus("Open");
+        ticket.setStatus(normalizeStatus(null)); // Defaults to "Open"
         ticket.setCreatedAt(Instant.now());
 
         Ticket savedTicket = ticketRepository.save(ticket);
@@ -77,18 +73,16 @@ public class TicketService {
         return mapToResponse(savedTicket);
     }
 
-    // NEW: Update Ticket Method
     public TicketResponse updateTicket(String id, UpdateTicketRequest request) {
         log.info("Attempting to update ticket with ID: {}", id);
 
-        Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ticket not found: " + id));
+        Ticket ticket = findTicketOrThrow(id);
 
-        ticket.setTitle(request.getTitle());
-        ticket.setDescription(request.getDescription());
-        ticket.setCategory(request.getCategory());
-        ticket.setPriority(request.getPriority());
-        ticket.setStatus(request.getStatus());
+        ticket.setTitle(normalizeRequired(request.getTitle()));
+        ticket.setDescription(normalizeRequired(request.getDescription()));
+        ticket.setCategory(normalizeRequired(request.getCategory()));
+        ticket.setPriority(normalizePriority(request.getPriority()));
+        ticket.setStatus(normalizeStatus(request.getStatus()));
 
         Ticket updatedTicket = ticketRepository.save(ticket);
 
@@ -96,7 +90,6 @@ public class TicketService {
         return mapToResponse(updatedTicket);
     }
 
-    // Updated with Logging for Pagination
     public Page<TicketResponse> getAllTicketsPaged(int page, int size, String sortBy, String direction) {
         log.info("Fetching paginated tickets -> Page: {}, Size: {}, SortBy: {}, Direction: {}", page, size, sortBy, direction);
         
@@ -105,6 +98,31 @@ public class TicketService {
         
         return ticketRepository.findAll(pageable)
                 .map(this::mapToResponse);
+    }
+
+    // --- Private Helper Methods ---
+
+    private Ticket findTicketOrThrow(String id) {
+        return ticketRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ticket not found: " + id));
+    }
+
+    private String normalizeRequired(String value) {
+        return (value != null) ? value.trim() : null;
+    }
+
+    private String normalizeStatus(String status) {
+        if (status == null || status.trim().isEmpty()) {
+            return "Open";
+        }
+        return status.trim();
+    }
+
+    private String normalizePriority(String priority) {
+        if (priority == null || priority.trim().isEmpty()) {
+            return "MEDIUM";
+        }
+        return priority.trim();
     }
 
     private TicketResponse mapToResponse(Ticket ticket) {

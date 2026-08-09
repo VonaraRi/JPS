@@ -1,0 +1,40 @@
+@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4NjI0ODk1OCwiZXhwIjoxNzg2MzM1MzU4fQ.kP3QXRCGyRH-039H5jj6I9aFUKKNlJWEC2MwkU_hXC4
+
+### Login as seeded admin
+POST http://localhost:8082/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "Admin@12345"
+}
+
+### Create Ticket
+POST http://localhost:8082/api/v1/tickets
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "  Laptop Keyboard Fault  ",
+  "description": "Spacebar key is sticking.",
+  "category": "Hardware",
+  "priority": "HIGH",
+  "createdBy": "Lee"
+}
+
+### Update Ticket
+PUT http://localhost:8082/api/v1/tickets/6a78000f9be8a41b443ff446
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Laptop Keyboard Fault",
+  "description": "Spacebar key replaced and tested.",
+  "category": "Hardware",
+  "priority": "MEDIUM",
+  "status": "CLOSED"
+}
+
+###NotFound Error Path
+GET http://localhost:8082/api/v1/tickets/invalid-id-999
+Authorization: Bearer {{token}}
