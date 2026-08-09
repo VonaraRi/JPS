@@ -30,5 +30,4 @@ It defines a specific task.
 It protects existing behaviour.
 It asks for tests.
 It asks for explanation.
-
 ```
