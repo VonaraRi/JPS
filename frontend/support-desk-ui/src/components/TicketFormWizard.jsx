@@ -2,19 +2,16 @@ import { useRef, useState } from 'react';
 import FormStepIndicator from './FormStepIndicator.jsx';
 import InlineFieldError from './InlineFieldError.jsx';
 import ErrorMessage from './ErrorMessage.jsx';
+import {
+  STATUS_OPTIONS,
+  PRIORITY_OPTIONS,
+  emptyTicketForm,
+  validateTicketFormStep,
+  normalizeTicketFormPayload,
+  formatTicketFormLabel
+} from '../utils/ticketFormValidation.js';
 
-const STATUS_OPTIONS = ['OPEN', 'IN_PROGRESS', 'CLOSED'];
-const PRIORITY_OPTIONS = ['LOW', 'MEDIUM', 'HIGH'];
-
-export const emptyTicketForm = {
-  title: '',
-  description: '',
-  category: '',
-  priority: 'MEDIUM',
-  status: 'OPEN',
-  createdBy: '',
-  createdAt: new Date().toISOString().slice(0, 16)
-};
+export { emptyTicketForm };
 
 export default function TicketFormWizard({
   mode = 'create',
@@ -37,49 +34,15 @@ export default function TicketFormWizard({
       [fieldName]: value
     }));
 
-    // Clear field error as user types
     setFieldErrors((current) => ({
       ...current,
       [fieldName]: ''
     }));
   }
 
-  // Day 13 Exercise 3 Validation Rules
   function validateStep(stepToValidate) {
-    const errors = {};
-
-    if (stepToValidate === 1) {
-      if (!formValues.title.trim()) {
-        errors.title = 'Title is required.';
-      }
-
-      if (!formValues.description.trim()) {
-        errors.description = 'Description is required.';
-      }
-
-      if (!formValues.category.trim()) {
-        errors.category = 'Category is required.';
-      }
-
-      if (!formValues.priority || !PRIORITY_OPTIONS.includes(formValues.priority)) {
-        errors.priority = 'Priority is required.';
-      }
-    }
-
-    if (stepToValidate === 2) {
-      if (!formValues.status || !STATUS_OPTIONS.includes(formValues.status)) {
-        errors.status = 'Status is required.';
-      }
-
-      if (!formValues.createdBy.trim()) {
-        errors.createdBy = 'Created By is required.';
-      }
-    }
-
-    if (stepToValidate === 3 && !reviewCheckboxRef.current?.checked) {
-      errors.review = 'Please confirm that you reviewed the ticket details.';
-    }
-
+    const isReviewed = Boolean(reviewCheckboxRef.current?.checked);
+    const errors = validateTicketFormStep(stepToValidate, formValues, isReviewed);
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -116,16 +79,7 @@ export default function TicketFormWizard({
       return;
     }
 
-    const payload = {
-      title: formValues.title.trim(),
-      description: formValues.description.trim(),
-      category: formValues.category.trim(),
-      priority: formValues.priority,
-      status: formValues.status,
-      createdBy: formValues.createdBy.trim(),
-      createdAt: formValues.createdAt
-    };
-
+    const payload = normalizeTicketFormPayload(formValues);
     await onSubmit(payload);
   }
 
@@ -140,7 +94,6 @@ export default function TicketFormWizard({
 
       {serverError && <ErrorMessage message={serverError} />}
 
-      {/* Visual Success Alert Box */}
       {successMessage && (
         <div
           className="message success-message"
@@ -268,7 +221,7 @@ export default function TicketFormWizard({
           <div className="review-grid">
             {Object.entries(formValues).map(([key, value]) => (
               <div key={key} className="info-item">
-                <span>{formatLabel(key)}</span>
+                <span>{formatTicketFormLabel(key)}</span>
                 <strong>{value || 'Not specified'}</strong>
               </div>
             ))}
@@ -303,8 +256,4 @@ export default function TicketFormWizard({
       </div>
     </form>
   );
-}
-
-function formatLabel(key) {
-  return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
 }
