@@ -1,13 +1,17 @@
-@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4Njc2MDI1NywiZXhwIjoxNzg2ODQ2NjU3fQ.LnWdtCdHmvNjlXb3f4FqtFAoDzd4BZsPEx_7Q1ei67g
+@baseUrl = http://localhost:8082
+@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4Njc3MDA2NiwiZXhwIjoxNzg2ODU2NDY2fQ.UeQ4o5nYmfRmn4DVMfZbTiqn0HDT4ZyQK_qu7D6zdy0
 
-### Day 17 - Health check
-GET http://localhost:8082/api/health
+### 1. Health check
+GET {{baseUrl}}/api/health
 
-### Day 17 - Readiness check
-GET http://localhost:8082/api/v1/readiness
+### 2. Readiness check
+GET {{baseUrl}}/api/v1/readiness
 
-### Day 17 - Login to confirm backend still works
-POST http://localhost:8082/api/auth/login
+### 3. Protected endpoint without token - should return 401
+GET {{baseUrl}}/api/v1/tickets
+
+### 4. Login as admin
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
@@ -15,10 +19,64 @@ Content-Type: application/json
   "password": "Admin@12345"
 }
 
-### Day 17 - Protected endpoint should return 401 without token
-GET http://localhost:8082/api/v1/tickets/paged?page=0&size=5&sortBy=id&direction=asc
-
-### Day 17 - Protected endpoint with token
-# Replace {{token}} after login.
-GET http://localhost:8082/api/v1/tickets/paged?page=0&size=5&sortBy=id&direction=asc
+### 5. Protected endpoint with token - should return 200
+GET {{baseUrl}}/api/v1/tickets
 Authorization: Bearer {{token}}
+
+### 6. Paged tickets timing check
+GET {{baseUrl}}/api/v1/tickets/paged?page=0&size=5&sortBy=id&direction=asc
+Authorization: Bearer {{token}}
+
+### 7. Invalid sort field - should return 400 if validation is enabled
+GET {{baseUrl}}/api/v1/tickets/paged?page=0&size=5&sortBy=password&direction=asc
+Authorization: Bearer {{token}}
+
+### 8. Report timing check: tickets by status
+GET {{baseUrl}}/api/v1/reports/tickets-by-status
+Authorization: Bearer {{token}}
+
+### 9. Report timing check: tickets by priority
+GET {{baseUrl}}/api/v1/reports/tickets-by-priority
+Authorization: Bearer {{token}}
+
+### 10. Duplicate ticket or invalid payload check
+POST {{baseUrl}}/api/v1/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Duplicate Network Issue",
+  "description": "Unable to connect to internal Wi-Fi",
+  "category": "Network",
+  "priority": "HIGH",
+  "createdBy": "admin@example.com"
+}
+
+### 11. Trigger 403 Forbidden (User role attempting Admin action)
+POST {{baseUrl}}/api/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Unauthorized Create Attempt",
+  "description": "User role trying to post to admin route",
+  "category": "Network",
+  "priority": "LOW"
+}
+
+### 12. Trigger 404 Not Found (Non-existent ticket ID)
+GET {{baseUrl}}/api/v1/tickets/99999
+Authorization: Bearer {{token}}
+
+### 13. Trigger 409 Conflict (Duplicate ticket resource)
+POST {{baseUrl}}/api/v1/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Duplicate Ticket Ref",
+  "description": "Triggering unique constraint error",
+  "category": "Network",
+  "priority": "HIGH",
+  "createdBy": "admin@example.com"
+}
