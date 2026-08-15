@@ -16,3 +16,33 @@ Trace API errors using HTTP status codes, error causes, and structured timing lo
 | **409 Conflict** | `POST http://localhost:8082/api/v1/tickets` | Request attempted to create a ticket with a title that already exists in MongoDB. | `c.e.s.config.RequestTimingFilter : requestId=deb55a7c method=POST path=/api/v1/tickets status=409 durationMs=6` |
 
 ---
+
+# Day 17 Exercise 04 — Performance and Index Review
+
+## Goal
+Identify query patterns in the Support Desk API and recommend MongoDB index strategies to optimize filter, sorting, reporting, and uniqueness checks.
+
+---
+
+## 1. Query Pattern Analysis
+
+Based on the endpoints and queries implemented in `TicketService.java` and `TicketRepository.java`:
+
+### A. Fields Used for Filtering
+* **`status`**: Used in `findByStatus(status)` to filter open, in-progress, or resolved tickets.
+* **`priority`**: Used in `findByPriority(priority)` to query high/medium/low severity items.
+* **`category`**: Used in `findByCategory(category)` to group tickets by domain (e.g., Network, Hardware, Software).
+
+### B. Fields Used for Sorting
+* **`createdAt`**: Frequently sorted by `desc` to show newest tickets first on dashboards.
+* **`id`**: Used as the default primary key sort field in pagination (`/api/v1/tickets/paged`).
+* **`title`**: Commonly used for alphabetical sorting in UI lists.
+
+### C. Fields That Should Be Unique
+* **`title`** *(or custom reference ID)*: Enforces uniqueness to prevent accidental duplicate ticket creation during POST requests.
+
+### D. Fields Used in Reports
+* **`status`**: Used for aggregation/grouping in `/api/v1/reports/tickets-by-status`.
+* **`priority`**: Used for aggregation/grouping in `/api/v1/reports/tickets-by-priority`.
+* **`category`**: Used for aggregation/grouping in `/api/v1/reports/tickets-by-category`.
+---
