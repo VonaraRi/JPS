@@ -73,3 +73,40 @@ Based on the endpoints and queries implemented in `TicketService.java` and `Tick
   * **Input:** `"user@"` or `""` (for mandatory field `createdBy`)
   * **Action:** **Reject** immediately with a `400 Bad Request` status and validation message (e.g., `"Invalid email format"` or `"createdBy field cannot be blank"`).
   * **Why:** Sanitisation should never be used to mask broken or malicious data structures. If an input fundamentally violates domain constraints, it must be explicitly rejected so the client is aware of the error.
+
+---
+## Exercise 06 — Security Hardening Evidence
+
+## Goal
+Demonstrate that the Support Desk API properly enforces access control, input validation, data integrity, log sanitisation, and configuration security.
+
+---
+
+## 1. Security HTTP Status Verification
+
+| Control Test | Endpoint & Action | Expected Status | Actual Status | Evidence Summary |
+| :--- | :--- | :---: | :---: | :--- |
+| **Missing Token** | `GET /api/v1/tickets` *(No Auth Header)* | `401` | `401 Unauthorized` | Request blocked by Spring Security `AuthenticationEntryPoint`. |
+| **Wrong Role** | `POST /api/tickets` *(with `ROLE_USER` token)* | `403` | `403 Forbidden` | Intercepted by security filter requiring `ROLE_ADMIN` authority. |
+| **Duplicate Record** | `POST /api/v1/tickets` *(Title: "Duplicate Network Issue")* | `409` | `409 Conflict` | `TicketService` pre-check threw `ResponseStatusException(CONFLICT)`. |
+| **Invalid Input** | `GET /api/v1/tickets/paged?sortBy=password` | `400` | `400 Bad Request` | Request rejected due to invalid sort property parameter validation. |
+
+---
+
+## 2. Sensitive Data & Log Protection
+
+* **Log Sanitisation Check:** Terminal output produced by `RequestTimingFilter` and standard loggers was inspected during login and request execution.
+  * **JWT Pass-through:** Bearer tokens are filtered out/redacted in logs (only `requestId`, `method`, `path`, `status`, and `durationMs` are logged).
+  * **Password Protection:** Plaintext passwords passed during `POST /api/auth/login` are never written to logger streams or console output.
+
+---
+
+## 3. Environment & Secrets Management
+
+* **`.gitignore` Verification:** Confirmed that environment files containing local secrets and credentials are explicitly ignored:
+
+```gitignore
+### Environment & Secrets ###
+.env
+.env.local
+*.env

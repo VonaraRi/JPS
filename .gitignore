@@ -4,6 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Environment & Secrets (Required for Exercise 06) ###
+.env
+.env.local
+*.env
+*.properties.local
+
 ### STS ###
 .apt_generated
 .classpath

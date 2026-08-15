@@ -1,5 +1,8 @@
 @baseUrl = http://localhost:8082
-@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4Njc3MDA2NiwiZXhwIjoxNzg2ODU2NDY2fQ.UeQ4o5nYmfRmn4DVMfZbTiqn0HDT4ZyQK_qu7D6zdy0
+@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJuYW1lIjoiSmFzb24iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc4Njc4MDc3MSwiZXhwIjoxNzg2ODY3MTcxfQ.c3xEdEHqNA40uYnUkKqq0gvDZR2nWWp_-Z5J15grVao
+
+# Obtain this token by logging in with a non-admin account (e.g., user@example.com)
+@userToken = paste-user-role-token-here
 
 ### 1. Health check
 GET {{baseUrl}}/api/health
@@ -10,13 +13,22 @@ GET {{baseUrl}}/api/v1/readiness
 ### 3. Protected endpoint without token - should return 401
 GET {{baseUrl}}/api/v1/tickets
 
-### 4. Login as admin
+### 4. Login as admin and user
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
   "email": "admin@example.com",
   "password": "Admin@12345"
+}
+
+### Login user returns token (Should return 200 OK)
+POST http://localhost:8082/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "mySecurePassword123"
 }
 
 ### 5. Protected endpoint with token - should return 200
@@ -39,7 +51,7 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/api/v1/reports/tickets-by-priority
 Authorization: Bearer {{token}}
 
-### 10. Duplicate ticket or invalid payload check
+### 10. Initial creation check
 POST {{baseUrl}}/api/v1/tickets
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -52,31 +64,45 @@ Content-Type: application/json
   "createdBy": "admin@example.com"
 }
 
-### 11. Trigger 403 Forbidden (User role attempting Admin action)
-POST {{baseUrl}}/api/tickets
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-  "title": "Unauthorized Create Attempt",
-  "description": "User role trying to post to admin route",
-  "category": "Network",
-  "priority": "LOW"
-}
-
-### 12. Trigger 404 Not Found (Non-existent ticket ID)
+### 11. Trigger 404 Not Found (Non-existent ticket ID)
 GET {{baseUrl}}/api/v1/tickets/99999
 Authorization: Bearer {{token}}
 
-### 13. Trigger 409 Conflict (Duplicate ticket resource)
+# ==============================================================================
+# EXERCISE 06 — DEDICATED SECURITY HARDENING EVIDENCE SUITE
+# ==============================================================================
+
+### 12. [E6 Test 1] Missing Token - Returns 401 Unauthorized
+GET {{baseUrl}}/api/v1/tickets
+
+@userToken=eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJBbGljZSIsInN1YiI6ImFsaWNlQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg2NzgwNjU5LCJleHAiOjE3ODY4NjcwNTl9.HcJ7CaMGcj0hOQWvDVLI4_3YNaNwvK5Gik_clprDpI4
+
+### 13. [E6 Test 2] Wrong Role - Returns 403 Forbidden (USER attempting ADMIN action)
+POST {{baseUrl}}/api/tickets
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Unauthorized User Post",
+  "description": "Regular user attempting admin endpoint",
+  "category": "Network",
+  "priority": "LOW",
+  "createdBy": "user@example.com"
+}
+
+### 14. [E6 Test 3] Duplicate Record - Returns 409 Conflict (Run immediately after #10)
 POST {{baseUrl}}/api/v1/tickets
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "title": "Duplicate Ticket Ref",
-  "description": "Triggering unique constraint error",
+  "title": "Duplicate Network Issue",
+  "description": "Attempting to create duplicate title",
   "category": "Network",
   "priority": "HIGH",
   "createdBy": "admin@example.com"
 }
+
+### 15. [E6 Test 4] Invalid Input - Returns 400 Bad Request
+GET {{baseUrl}}/api/v1/tickets/paged?page=0&size=5&sortBy=password&direction=asc
+Authorization: Bearer {{token}}
