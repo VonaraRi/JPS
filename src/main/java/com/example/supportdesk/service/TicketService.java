@@ -1,22 +1,24 @@
 package com.example.supportdesk.service;
 
+import com.example.supportdesk.dto.CreateTicketRequest;
 import com.example.supportdesk.dto.TicketResponse;
+import com.example.supportdesk.dto.UpdateTicketRequest;
 import com.example.supportdesk.exception.NotFoundException;
 import com.example.supportdesk.model.Ticket;
 import com.example.supportdesk.repository.TicketRepository;
-import com.example.supportdesk.dto.CreateTicketRequest;
-import com.example.supportdesk.dto.UpdateTicketRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.Instant;
 
 @Service
 public class TicketService {
@@ -57,8 +59,19 @@ public class TicketService {
     public TicketResponse createTicket(CreateTicketRequest request) {
         log.info("Attempting to create a new ticket with title: '{}' by user: {}", request.getTitle(), request.getCreatedBy());
         
+        String normalizedTitle = normalizeRequired(request.getTitle());
+
+        // Check for duplicate title to trigger a 409 Conflict status code
+        if (ticketRepository.existsByTitle(normalizedTitle)) {
+            log.warn("Ticket creation failed: Duplicate title '{}'", normalizedTitle);
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, 
+                    "A ticket with this title already exists: " + normalizedTitle
+            );
+        }
+        
         Ticket ticket = new Ticket();
-        ticket.setTitle(normalizeRequired(request.getTitle()));
+        ticket.setTitle(normalizedTitle);
         ticket.setDescription(normalizeRequired(request.getDescription()));
         ticket.setCategory(normalizeRequired(request.getCategory()));
         ticket.setPriority(normalizePriority(request.getPriority()));
