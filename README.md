@@ -1,4 +1,5 @@
-# Day 17 Exercise 03 — Error Tracking
+# Day 17 
+## Exercise 03 — Error Tracking
 
 ## Goal
 Trace API errors using HTTP status codes, error causes, and structured timing logs
@@ -17,14 +18,14 @@ Trace API errors using HTTP status codes, error causes, and structured timing lo
 
 ---
 
-# Day 17 Exercise 04 — Performance and Index Review
+## Exercise 04 — Performance and Index Review
 
 ## Goal
 Identify query patterns in the Support Desk API and recommend MongoDB index strategies to optimize filter, sorting, reporting, and uniqueness checks.
 
 ---
 
-## 1. Query Pattern Analysis
+## Query Pattern Analysis
 
 Based on the endpoints and queries implemented in `TicketService.java` and `TicketRepository.java`:
 
