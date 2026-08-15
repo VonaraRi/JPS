@@ -47,3 +47,29 @@ Based on the endpoints and queries implemented in `TicketService.java` and `Tick
 * **`priority`**: Used for aggregation/grouping in `/api/v1/reports/tickets-by-priority`.
 * **`category`**: Used for aggregation/grouping in `/api/v1/reports/tickets-by-category`.
 ---
+
+## Exercise 05 — Reflection: Validation vs. Sanitisation
+
+### 1. What is validation?
+**Validation** is the process of verifying whether incoming client data meets predefined rules, formats, and structural constraints before processing it. If the data fails these checks (e.g., missing required fields, invalid email format, negative price, or unauthorized values), the application **rejects** the request entirely and returns an appropriate error (such as HTTP `400 Bad Request`).
+
+---
+
+### 2. What is sanitisation?
+**Sanitisation** is the process of safely cleaning or normalising raw user input before storing, logging, or displaying it. Unlike validation, sanitisation modifies harmless variations in the input—such as trimming accidental leading/trailing spaces, converting lowercase codes to uppercase, or stripping illegal control characters—to make the data safe, consistent, and standardized without rejecting the request.
+
+---
+
+### 3. Give one example where input should be cleaned.
+* **Example:** Cleaning a user-submitted ticket code, priority string, or user email address.
+  * **Input:** `"   ticket-net-001   "`
+  * **Sanitised Output:** `"TICKET-NET-001"`
+  * **Why:** Trimming leading/trailing whitespace and normalising letter casing prevents formatting mismatches in database lookups while allowing the request to proceed seamlessly.
+
+---
+
+### 4. Give one example where input should be rejected.
+* **Example:** Submitting a blank mandatory field or an invalid email address format during user registration.
+  * **Input:** `"user@"` or `""` (for mandatory field `createdBy`)
+  * **Action:** **Reject** immediately with a `400 Bad Request` status and validation message (e.g., `"Invalid email format"` or `"createdBy field cannot be blank"`).
+  * **Why:** Sanitisation should never be used to mask broken or malicious data structures. If an input fundamentally violates domain constraints, it must be explicitly rejected so the client is aware of the error.
