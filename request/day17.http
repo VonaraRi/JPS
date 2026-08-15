@@ -4,7 +4,7 @@
 GET http://localhost:8082/api/health
 
 ### Day 17 - Readiness check
-GET http://localhost:8082/api/readiness
+GET http://localhost:8082/api/v1/readiness
 
 ### Day 17 - Login to confirm backend still works
 POST http://localhost:8082/api/auth/login

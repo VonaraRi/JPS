@@ -40,8 +40,8 @@ public class SecurityConfig {
                 // ==========================================
                 //  Public endpoints
                 // ==========================================
-                // Added /api/v1/info to the public GET rules here
-                .requestMatchers(HttpMethod.GET, "/api/health", "/api/v1/info").permitAll()
+                // Added /api/v1/readiness to public GET rules
+                .requestMatchers(HttpMethod.GET, "/api/health", "/api/v1/info", "/api/v1/readiness").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
                 
                 // ==========================================
